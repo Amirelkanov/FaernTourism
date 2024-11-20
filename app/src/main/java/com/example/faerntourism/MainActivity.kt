@@ -20,7 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.faerntourism.models.SignInViewModel
-import com.example.faerntourism.models.service.GoogleAuthUiClient
+import com.example.faerntourism.models.service.GoogleAuthUiService
 import com.example.faerntourism.screens.ProfileScreen
 import com.example.faerntourism.screens.SignInScreen
 import com.example.faerntourism.ui.theme.FaernTourismTheme
@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
 
     private val googleAuthUiClient by lazy {
-        GoogleAuthUiClient(
+        GoogleAuthUiService(
             context = applicationContext,
             oneTapClient = Identity.getSignInClient(applicationContext)
         )
@@ -105,9 +105,7 @@ class MainActivity : ComponentActivity() {
                                     lifecycleScope.launch {
                                         googleAuthUiClient.signOut()
                                         Toast.makeText(
-                                            applicationContext,
-                                            "Signed out",
-                                            Toast.LENGTH_LONG
+                                            applicationContext, "Signed out", Toast.LENGTH_LONG
                                         ).show()
 
                                         navController.popBackStack()

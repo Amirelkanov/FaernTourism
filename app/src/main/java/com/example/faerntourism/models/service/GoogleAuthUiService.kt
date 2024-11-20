@@ -1,4 +1,5 @@
 @file:Suppress("DEPRECATION")
+// Я не знаю, что он от меня нового хочет, если в ассистенте он сам рекомендует BeginSignInRequest
 
 package com.example.faerntourism.models.service
 
@@ -16,7 +17,7 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 import kotlin.coroutines.cancellation.CancellationException
 
-class GoogleAuthUiClient(
+class GoogleAuthUiService(
     private val context: Context,
     private val oneTapClient: SignInClient,
 ) {
@@ -24,13 +25,10 @@ class GoogleAuthUiClient(
 
     suspend fun signIn(): IntentSender? {
         val result = try {
-            oneTapClient.beginSignIn(
-                buildSignInRequest()
-            ).await()
+            oneTapClient.beginSignIn(buildSignInRequest()).await()
         } catch (e: Exception) {
             e.printStackTrace()
-            if (e is CancellationException) throw e
-            null
+            if (e is CancellationException) throw e else null
         }
         return result?.pendingIntent?.intentSender
     }
@@ -42,7 +40,7 @@ class GoogleAuthUiClient(
         return try {
             val user = auth.signInWithCredential(googleCredentials).await().user
             SignInResult(
-                data = user?.run {
+                data = user?.run { // We are not sure if we have user, that's why we use user?.run where we create UserData object
                     UserData(
                         userId = uid,
                         username = displayName,
@@ -79,16 +77,17 @@ class GoogleAuthUiClient(
         )
     }
 
+    // Integrate Google One Tap sign-in into app
     private fun buildSignInRequest(): BeginSignInRequest {
         return BeginSignInRequest.Builder()
             .setGoogleIdTokenRequestOptions(
                 BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
                     .setSupported(true)
-                    .setFilterByAuthorizedAccounts(false)
-                    .setServerClientId(context.getString(R.string.web_client_id))
+                    .setFilterByAuthorizedAccounts(false) // By using false flag we providing full list of google accounts user can log in
+                    .setServerClientId(context.getString(R.string.web_client_id)) // Linking with firebase project
                     .build()
             )
-            .setAutoSelectEnabled(true)
+            .setAutoSelectEnabled(true) // If we have only 1 signed account we will sign in automatically
             .build()
     }
 }

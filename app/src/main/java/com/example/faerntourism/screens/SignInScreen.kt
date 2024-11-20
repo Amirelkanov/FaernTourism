@@ -17,7 +17,7 @@ import com.example.faerntourism.models.SignInState
 @Composable
 fun SignInScreen(
     state: SignInState,
-    onSignInClick: () -> Unit
+    onSignInClick: () -> Unit,
 ) {
     val context = LocalContext.current
     LaunchedEffect(key1 = state.signInError) {
