@@ -17,26 +17,18 @@ import androidx.compose.ui.unit.sp
 import com.example.faerntourism.models.UserData
 
 @Composable
-fun ProfileScreen(
+fun HomeScreen(
     userData: UserData?,
+    onSignInClick: () -> Unit,
     onSignOut: () -> Unit,
 ) {
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (userData?.profilePictureUrl != null) {
-            /*AsyncImage(
-                model = userData.profilePictureUrl,
-                contentDescription = "Profile picture",
-                modifier = Modifier
-                    .size(150.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
-            )*/
-            Spacer(modifier = Modifier.height(16.dp))
-        }
+
         if (userData?.username != null) {
             Text(
                 text = userData.username,
@@ -46,8 +38,21 @@ fun ProfileScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
         }
-        Button(onClick = onSignOut) {
-            Text(text = "Sign out")
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (userData !== null) {
+                Button(onClick = onSignOut) {
+                    Text(text = "Sign out")
+                }
+            } else {
+                Button(onClick = onSignInClick) {
+                    Text(text = "Sign in")
+                }
+            }
         }
+
     }
 }
+
+
