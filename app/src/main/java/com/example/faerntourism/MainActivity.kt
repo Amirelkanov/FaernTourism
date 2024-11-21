@@ -1,5 +1,7 @@
 package com.example.faerntourism
 
+import FavScreen
+import ToursScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -22,6 +24,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.faerntourism.models.SignInViewModel
 import com.example.faerntourism.models.service.GoogleAuthUiService
+import com.example.faerntourism.screens.FaernTourismAppPortrait
 import com.example.faerntourism.screens.HomeScreen
 import com.example.faerntourism.ui.theme.FaernTourismTheme
 import com.google.android.gms.auth.api.identity.Identity
@@ -78,7 +81,7 @@ class MainActivity : ComponentActivity() {
                 }
             )
 
-            HomeScreen(
+            FaernTourismAppPortrait(
                 userData = googleAuthUiClient.getSignedInUser(),
                 onSignInClick = {
                     lifecycleScope.launch {
@@ -95,8 +98,15 @@ class MainActivity : ComponentActivity() {
                         googleAuthUiClient.signOut()
                         navController.navigate(HOME_SCREEN)
                     }
-                }
+                },
+                openScreen = { route -> navController.navigate(route) }
             )
+        }
+        composable(FAV_SCREEN) {
+            FavScreen(openScreen = { route -> navController.navigate(route) })
+        }
+        composable(TOURS_SCREEN) {
+            ToursScreen(openScreen = { route -> navController.navigate(route) })
         }
     }
 }

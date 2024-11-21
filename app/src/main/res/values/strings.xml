@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">FaernTourism</string>
     <string name="web_client_id">436072807280-83r6ji7461rl8h80itjeva8mpjkhrdfa.apps.googleusercontent.com</string>
+    <string name="placeholder_search">Поиск</string>
+    <string name="bottom_navigation_favourite">Избранное</string>
+    <string name="bottom_navigation_home">Главная</string>
+    <string name="bottom_navigation_tours">Туры</string>
+    <string name="philarmonic">Филармония</string>
 </resources>

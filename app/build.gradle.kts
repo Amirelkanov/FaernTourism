@@ -53,7 +53,7 @@ android {
 dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
-
+    implementation(libs.androidx.material.icons.extended)
     implementation(libs.firebase.auth)
     implementation(libs.play.services.auth)
 
