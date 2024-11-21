@@ -1,6 +1,7 @@
 package com.example.faerntourism
 
 import FavScreen
+import PlaceScreen
 import ToursScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -22,6 +23,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.faerntourism.models.SignInViewModel
 import com.example.faerntourism.models.service.GoogleAuthUiService
 import com.example.faerntourism.screens.FaernTourismAppPortrait
@@ -100,6 +102,7 @@ class MainActivity : ComponentActivity() {
                     }
                 },
                 openScreen = { route -> navController.navigate(route) }
+
             )
         }
         composable(FAV_SCREEN) {
@@ -107,6 +110,18 @@ class MainActivity : ComponentActivity() {
         }
         composable(TOURS_SCREEN) {
             ToursScreen(openScreen = { route -> navController.navigate(route) })
+        }
+        composable(
+            route = "$PLACE_SCREEN$PLACE_ID_ARG",
+            arguments = listOf(
+                navArgument(name = PLACE_ID) {
+                    defaultValue = PLACE_DEFAULT_ID
+                }
+            )
+        ) { backstackEntry ->
+            PlaceScreen(
+                placeId = backstackEntry.arguments?.getString(PLACE_ID)?.toInt(),
+            )
         }
     }
 }

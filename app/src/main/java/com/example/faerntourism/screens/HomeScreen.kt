@@ -1,8 +1,10 @@
 package com.example.faerntourism.screens
 
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -62,6 +64,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.example.faerntourism.FAV_SCREEN
 import com.example.faerntourism.HOME_SCREEN
+import com.example.faerntourism.PLACE_ID
+import com.example.faerntourism.PLACE_SCREEN
 import com.example.faerntourism.R
 import com.example.faerntourism.TOURS_SCREEN
 import com.example.faerntourism.models.UserData
@@ -74,6 +78,7 @@ fun HomeScreen(
     userData: UserData? = null,
     onSignInClick: () -> Unit = {},
     onSignOut: () -> Unit = {},
+    openScreen: (String) -> Unit = {}
 ) {
 
     Spacer(Modifier.height(16.dp))
@@ -87,7 +92,9 @@ fun HomeScreen(
             )
         }
         items(placesData) { item ->
-            PlaceCard(item.drawable, item.text, Modifier.height(80.dp))
+            PlaceCard(item.drawable, item.text, Modifier.height(80.dp).clickable (
+                onClick = { openScreen("$PLACE_SCREEN?$PLACE_ID=1") }
+            ))
         }
     }
     Spacer(Modifier.height(16.dp))
@@ -234,7 +241,7 @@ fun FaernTourismAppPortrait(
     // TODO: topbar
     FaernTourismTheme {
         Scaffold(bottomBar = { FaernBottomNavigation(openScreen = openScreen) }) { padding ->
-            HomeScreen(Modifier.padding(padding), userData, onSignInClick, onSignOut)
+            HomeScreen(Modifier.padding(padding), userData, onSignInClick, onSignOut, openScreen)
         }
     }
 }
