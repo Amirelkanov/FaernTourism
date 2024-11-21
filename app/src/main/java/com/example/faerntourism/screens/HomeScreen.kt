@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -78,7 +79,7 @@ fun HomeScreen(
     userData: UserData? = null,
     onSignInClick: () -> Unit = {},
     onSignOut: () -> Unit = {},
-    openScreen: (String) -> Unit = {}
+    openScreen: (String) -> Unit = {},
 ) {
 
     Spacer(Modifier.height(16.dp))
@@ -91,10 +92,14 @@ fun HomeScreen(
                 userData = userData, onSignInClick = onSignInClick, onSignOut = onSignOut
             )
         }
-        items(placesData) { item ->
-            PlaceCard(item.drawable, item.text, Modifier.height(80.dp).clickable (
-                onClick = { openScreen("$PLACE_SCREEN?$PLACE_ID=1") }
-            ))
+        itemsIndexed(placesData) { index, item ->
+            PlaceCard(item.drawable, item.text,
+                Modifier
+                    .height(80.dp)
+                    .clickable(
+                        // TODO: вместо индекса надо будет айдишник из бд пихать
+                        onClick = { openScreen("$PLACE_SCREEN?$PLACE_ID=$index") }
+                    ))
         }
     }
     Spacer(Modifier.height(16.dp))
@@ -112,7 +117,7 @@ fun SearchBar(
     OutlinedTextField(value = "", onValueChange = {}, leadingIcon = {
         Icon(
             imageVector = Icons.Default.Search,
-            contentDescription = null // Т.к. и так будет placeholder Search... , которую и прочитает экранный диктор
+            contentDescription = null
         )
     }, colors = TextFieldDefaults.colors(
         unfocusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -264,7 +269,6 @@ private data class DrawableStringPair(
     @StringRes val text: Int,
 )
 
-
 @Preview(showBackground = true, backgroundColor = 0xFFF5F0EE)
 @Composable
 fun BottomNavigationPreview() {
@@ -295,7 +299,7 @@ fun PlaceCardPreview() {
 @Composable
 fun GeoTagPlaceInfoPreview() {
     FaernTourismTheme {
-        GeoTagPlaceInfo(50)
+        GeoTagPlaceInfo(50) // TODO: дистанция должна рассчитываться
     }
 }
 
