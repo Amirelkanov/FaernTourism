@@ -4,33 +4,23 @@ import FavScreen
 import PlaceScreen
 import ToursScreen
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.credentials.CredentialManager
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.faerntourism.models.SignInViewModel
 import com.example.faerntourism.models.service.GoogleAuthUiService
 import com.example.faerntourism.screens.FaernTourismAppPortrait
-import com.example.faerntourism.screens.HomeScreen
 import com.example.faerntourism.ui.theme.FaernTourismTheme
-import com.google.android.gms.auth.api.identity.Identity
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -38,7 +28,7 @@ class MainActivity : ComponentActivity() {
     private val googleAuthUiClient by lazy {
         GoogleAuthUiService(
             context = applicationContext,
-            oneTapClient = Identity.getSignInClient(applicationContext)
+            credentialManager = CredentialManager.create(applicationContext)
         )
     }
 
@@ -60,45 +50,14 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun NavGraphBuilder.routesGraph(navController: NavController) {
+       // TODO: think about flow that will return result of sign in etc
         composable(HOME_SCREEN) {
-            val viewModel = viewModel<SignInViewModel>()
-            val state by viewModel.state.collectAsStateWithLifecycle()
-
-            LaunchedEffect(key1 = state.isSignInSuccessful) {
-                if (state.isSignInSuccessful) {
-                    viewModel.resetState()
-                    Toast.makeText(
-                        applicationContext,
-                        googleAuthUiClient.getSignedInUser()?.username,
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-
-            val launcher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.StartIntentSenderForResult(),
-                onResult = { result ->
-                    if (result.resultCode == RESULT_OK) {
-                        lifecycleScope.launch {
-                            val signInResult = googleAuthUiClient.signInWithIntent(
-                                intent = result.data ?: return@launch
-                            )
-                            viewModel.onSignInResult(signInResult)
-                        }
-                    }
-                }
-            )
-
             FaernTourismAppPortrait(
                 userData = googleAuthUiClient.getSignedInUser(),
                 onSignInClick = {
                     lifecycleScope.launch {
-                        val signInIntentSender = googleAuthUiClient.signIn()
-                        launcher.launch(
-                            IntentSenderRequest.Builder(
-                                signInIntentSender ?: return@launch
-                            ).build()
-                        )
+                        googleAuthUiClient.signIn()
+                        navController.navigate(HOME_SCREEN)
                     }
                 },
                 onSignOut = {
@@ -108,7 +67,6 @@ class MainActivity : ComponentActivity() {
                     }
                 },
                 openScreen = { route -> navController.navigate(route) }
-
             )
         }
         composable(FAV_SCREEN) {
