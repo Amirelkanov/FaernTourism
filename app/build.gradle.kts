@@ -56,7 +56,8 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.firebase.auth)
     implementation(libs.play.services.auth)
-
+    implementation(libs.play.services.location)
+    implementation("com.google.maps.android:android-maps-utils:0.5+")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -68,6 +69,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.googleid)
+    implementation(libs.play.services.maps)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
