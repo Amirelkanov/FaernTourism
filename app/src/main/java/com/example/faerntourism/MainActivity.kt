@@ -5,7 +5,11 @@ import FavScreen
 import android.Manifest
 import PlaceScreen
 import ToursScreen
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,11 +26,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.faerntourism.models.service.GoogleAuthUiService
 import com.example.faerntourism.models.service.LocationService
 import com.example.faerntourism.screens.FaernTourismAppPortrait
 import com.example.faerntourism.ui.theme.FaernTourismTheme
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 class MainActivity : ComponentActivity() {
 
@@ -51,6 +59,22 @@ class MainActivity : ComponentActivity() {
             0
         )
 
+        val notificationManager =
+            applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        val channel = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel(
+                "daily_notification_channel",
+                "Daily Notification",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+        } else {
+            TODO("VERSION.SDK_INT < O")
+        }
+        notificationManager.createNotificationChannel(channel)
+
+        scheduleDailyNotification()
+
         Intent(applicationContext, LocationService::class.java).apply {
             action = LocationService.ACTION_START
             startService(this)
@@ -69,6 +93,19 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun scheduleDailyNotification() {
+        val workRequest = PeriodicWorkRequestBuilder<DailyNotificationWorker>(
+            12, TimeUnit.HOURS,
+            1, TimeUnit.HOURS
+        ).build()
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "DailyNotification",
+            ExistingPeriodicWorkPolicy.KEEP,
+            workRequest
+        )
     }
 
 

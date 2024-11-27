@@ -43,7 +43,6 @@ class LocationClient(
             }
 
             val request = LocationRequest.Builder(accuracy, interval)
-                .setWaitForAccurateLocation(false)
                 .setMinUpdateIntervalMillis(interval)
                 .build()
 
