@@ -1,48 +1,85 @@
 package com.example.faerntourism
 
+
 import FavScreen
+import android.Manifest
 import PlaceScreen
 import ToursScreen
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.core.app.ActivityCompat
+import androidx.credentials.CredentialManager
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.faerntourism.models.SignInViewModel
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.faerntourism.models.service.GoogleAuthUiService
+import com.example.faerntourism.models.service.LocationService
 import com.example.faerntourism.screens.FaernTourismAppPortrait
-import com.example.faerntourism.screens.HomeScreen
 import com.example.faerntourism.ui.theme.FaernTourismTheme
-import com.google.android.gms.auth.api.identity.Identity
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 class MainActivity : ComponentActivity() {
 
     private val googleAuthUiClient by lazy {
         GoogleAuthUiService(
             context = applicationContext,
-            oneTapClient = Identity.getSignInClient(applicationContext)
+            credentialManager = CredentialManager.create(applicationContext)
         )
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.POST_NOTIFICATIONS
+            ),
+            0
+        )
+
+        val notificationManager =
+            applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        val channel = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel(
+                "daily_notification_channel",
+                "Daily Notification",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+        } else {
+            TODO("VERSION.SDK_INT < O")
+        }
+        notificationManager.createNotificationChannel(channel)
+
+        scheduleDailyNotification()
+
+        Intent(applicationContext, LocationService::class.java).apply {
+            action = LocationService.ACTION_START
+            startService(this)
+        }
+
         setContent {
             FaernTourismTheme {
                 Surface(
@@ -58,41 +95,28 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun scheduleDailyNotification() {
+        val workRequest = PeriodicWorkRequestBuilder<DailyNotificationWorker>(
+            12, TimeUnit.HOURS,
+            1, TimeUnit.HOURS
+        ).build()
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "DailyNotification",
+            ExistingPeriodicWorkPolicy.KEEP,
+            workRequest
+        )
+    }
+
+
     private fun NavGraphBuilder.routesGraph(navController: NavController) {
         composable(HOME_SCREEN) {
-            val viewModel = viewModel<SignInViewModel>()
-            val state by viewModel.state.collectAsStateWithLifecycle()
-
-            LaunchedEffect(key1 = state.isSignInSuccessful) {
-                if (state.isSignInSuccessful) {
-                    viewModel.resetState()
-                }
-            }
-
-            val launcher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.StartIntentSenderForResult(),
-                onResult = { result ->
-                    if (result.resultCode == RESULT_OK) {
-                        lifecycleScope.launch {
-                            val signInResult = googleAuthUiClient.signInWithIntent(
-                                intent = result.data ?: return@launch
-                            )
-                            viewModel.onSignInResult(signInResult)
-                        }
-                    }
-                }
-            )
-
             FaernTourismAppPortrait(
                 userData = googleAuthUiClient.getSignedInUser(),
                 onSignInClick = {
                     lifecycleScope.launch {
-                        val signInIntentSender = googleAuthUiClient.signIn()
-                        launcher.launch(
-                            IntentSenderRequest.Builder(
-                                signInIntentSender ?: return@launch
-                            ).build()
-                        )
+                        googleAuthUiClient.signIn()
+                        navController.navigate(HOME_SCREEN)
                     }
                 },
                 onSignOut = {
@@ -102,7 +126,6 @@ class MainActivity : ComponentActivity() {
                     }
                 },
                 openScreen = { route -> navController.navigate(route) }
-
             )
         }
         composable(FAV_SCREEN) {
