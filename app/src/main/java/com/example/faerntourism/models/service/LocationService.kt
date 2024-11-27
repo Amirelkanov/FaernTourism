@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import com.example.faerntourism.LOCATION_NOTIFICATION_CHANNEL_ID
 import com.example.faerntourism.R
 import com.example.faerntourism.models.LocationClient
 import com.google.android.gms.location.LocationServices
@@ -22,6 +23,8 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.DurationUnit
 
 
+// TODO: на самом деле, я бы это тоже в воркер засунул:
+//  типа время от времени просто чекать локацию пользователя (раз в час, скажем)
 class LocationService : Service() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -48,7 +51,7 @@ class LocationService : Service() {
     }
 
     private fun start() {
-        val notification = NotificationCompat.Builder(this, "location")
+        val notification = NotificationCompat.Builder(this, LOCATION_NOTIFICATION_CHANNEL_ID)
             .setContentTitle("Ищем интересные места поблизости...")
             .setSmallIcon(R.drawable.ic_launcher_background)
             .setOngoing(true)

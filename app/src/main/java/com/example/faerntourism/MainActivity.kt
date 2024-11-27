@@ -2,17 +2,17 @@ package com.example.faerntourism
 
 
 import FavScreen
-import android.Manifest
 import PlaceScreen
 import ToursScreen
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
@@ -45,7 +45,6 @@ class MainActivity : ComponentActivity() {
         )
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -59,21 +58,10 @@ class MainActivity : ComponentActivity() {
             0
         )
 
-        val notificationManager =
-            applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        val channel = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel(
-                "daily_notification_channel",
-                "Daily Notification",
-                NotificationManager.IMPORTANCE_HIGH
-            )
-        } else {
-            TODO("VERSION.SDK_INT < O")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createDailyNotificationChannel()
+            scheduleDailyNotification()
         }
-        notificationManager.createNotificationChannel(channel)
-
-        scheduleDailyNotification()
 
         Intent(applicationContext, LocationService::class.java).apply {
             action = LocationService.ACTION_START
@@ -95,10 +83,25 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+
+    // TODO : как сделаешь лабу по воркерам, подумай, куда можно перетащить
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createDailyNotificationChannel() {
+        val notificationManager =
+            applicationContext.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
+        val channel = NotificationChannel(
+            DAILY_NOTIFICATION_CHANNEL_ID,
+            "Daily Notification",
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
+        notificationManager.createNotificationChannel(channel)
+    }
+
     private fun scheduleDailyNotification() {
         val workRequest = PeriodicWorkRequestBuilder<DailyNotificationWorker>(
             12, TimeUnit.HOURS,
-            1, TimeUnit.HOURS
+            30, TimeUnit.MINUTES
         ).build()
 
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(

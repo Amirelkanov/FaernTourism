@@ -53,6 +53,7 @@ android {
 dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
+    implementation(libs.firebase.messaging)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.firebase.auth)
     implementation(libs.play.services.auth)
@@ -60,6 +61,7 @@ dependencies {
 
     implementation(libs.androidx.work.runtime.ktx)
     implementation("com.google.maps.android:android-maps-utils:0.5+")
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -73,6 +75,7 @@ dependencies {
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.googleid)
     implementation(libs.play.services.maps)
+    implementation(libs.firebase.vertexai)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

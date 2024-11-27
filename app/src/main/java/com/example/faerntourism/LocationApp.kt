@@ -12,9 +12,9 @@ class LocationApp : Application() {
     override fun onCreate() {
         super.onCreate()
         val channel = NotificationChannel(
-            "location",
+            LOCATION_NOTIFICATION_CHANNEL_ID,
             "Location",
-            NotificationManager.IMPORTANCE_HIGH
+            NotificationManager.IMPORTANCE_DEFAULT
         )
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

@@ -1,10 +1,8 @@
 package com.example.faerntourism
 
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.work.Worker
@@ -23,13 +21,13 @@ class DailyNotificationWorker(appContext: Context, workerParams: WorkerParameter
         val notificationManager =
             applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        val notification = NotificationCompat.Builder(applicationContext, "daily_notification_channel")
-            .setContentTitle("Это интересно")
+        val notification = NotificationCompat.Builder(applicationContext, DAILY_NOTIFICATION_CHANNEL_ID)
+            .setContentTitle("Это интересно!")
             .setContentText("Донбеттыр - повелитель подводного царства...")
+            .setOngoing(false)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
 
-        notificationManager.notify(1, notification)
+        notificationManager.notify(500, notification)
     }
 }
