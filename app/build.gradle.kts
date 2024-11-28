@@ -60,8 +60,8 @@ dependencies {
     implementation(libs.play.services.location)
 
     implementation(libs.androidx.work.runtime.ktx)
-    implementation("com.google.maps.android:android-maps-utils:0.5+")
-
+    implementation(libs.android.maps.utils)
+    implementation(libs.material3)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
