@@ -23,8 +23,10 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.example.faerntourism.R
 import com.example.faerntourism.ui.theme.AppTypography
@@ -37,7 +39,7 @@ import com.example.faerntourism.ui.theme.primaryContainerLight
 fun MyCard(
     mainTitle: String = "",
     secondaryTitle: String = "",
-    painter: Painter = ColorPainter(primaryContainerLight),
+    painter: Painter? = null,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -47,7 +49,11 @@ fun MyCard(
             .fillMaxWidth()
     ) {
         Box {
-            Image(painter = painter, contentScale = ContentScale.Crop, contentDescription = null)
+            Image(
+                painter = if (painter !== null) painter else ColorPainter(primaryContainerLight),
+                contentScale = ContentScale.Crop,
+                contentDescription = null
+            )
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -89,7 +95,10 @@ fun MyCard(
                         text = mainTitle,
                         color = Color.White,
                         fontSize = 32.sp,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Medium,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis,
+                        lineHeight = 1.em
                     )
                     Text(
                         text = secondaryTitle,
@@ -104,11 +113,14 @@ fun MyCard(
 }
 
 
-
 @Preview(device = "spec:width=411dp,height=891dp", showSystemUi = true)
 @Composable
 fun MyCardPreview() {
     FaernTourismTheme {
-        MyCard("Лютеранская Кирха", "500 м", painterResource(R.drawable.philharmonic))
+        MyCard(
+            "Лютеранская Кирха",
+            "500 м",
+            painterResource(R.drawable.philharmonic)
+        )
     }
 }

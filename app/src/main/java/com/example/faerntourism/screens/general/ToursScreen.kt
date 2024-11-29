@@ -1,5 +1,4 @@
-package com.example.faerntourism.screens
-
+package com.example.faerntourism.screens.general
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,8 +8,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,23 +20,24 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.faerntourism.models.UserData
-import com.example.faerntourism.places
+import com.example.faerntourism.tours
 import com.example.faerntourism.ui.components.GeneralScreenWrapper
 import com.example.faerntourism.ui.components.ListItemAdditionalInfo
 import com.example.faerntourism.ui.components.MyListItem
 import com.example.faerntourism.ui.components.SearchBar
+import com.example.faerntourism.ui.theme.AppTypography
 import com.example.faerntourism.ui.theme.FaernTourismTheme
 import com.example.faerntourism.ui.theme.secondaryLight
 
 @Composable
-fun HomeScreen(
+fun ToursScreen(
     modifier: Modifier = Modifier,
     userData: UserData? = null,
     onSignInClick: () -> Unit = {},
     onSignOut: () -> Unit = {},
     openScreen: (String) -> Unit = {},
 ) {
-    GeneralScreenWrapper("Что посетить?", content = {
+    GeneralScreenWrapper("Туры", content = {
         Column(
             verticalArrangement = Arrangement.spacedBy(20.dp),
             modifier = modifier
@@ -47,28 +49,41 @@ fun HomeScreen(
                 mutableStateOf(TextFieldValue(""))
             }
 
-            SearchBar(state = textState)
+            SearchBar(state = textState, trailingContent = {
+                Icon(
+                    imageVector = Icons.Default.CalendarMonth,
+                    contentDescription = null,
+                )
+            })
 
             val searchedText = textState.value.text
 
-            val places = places()
+            val tours = tours()
             LazyColumn() {
-                items(places.filter {
+                items(tours.filter {
                     it.name.contains(searchedText, ignoreCase = true)
-                }) { place ->
+                }) { tour ->
                     MyListItem(
-                        place.name, place.description, 2, place.img,
+                        tour.name, tour.description, 2, tour.img,
                         additionalInfo = {
                             ListItemAdditionalInfo(
                                 icon = {
                                     Icon(
-                                        Icons.Default.LocationOn,
+                                        Icons.Default.CalendarToday,
                                         contentDescription = null,
                                         modifier = Modifier.size(16.dp),
                                         tint = secondaryLight
                                     )
                                 },
-                                text = "50 м от вас"
+                                text = "от " + tour.startDate
+                            )
+                        },
+                        trailingContent = {
+                            Text(
+                                "${tour.price}₽",
+                                style = AppTypography.titleMedium,
+                                maxLines = 1,
+                                color = secondaryLight
                             )
                         },
                     )
@@ -80,9 +95,9 @@ fun HomeScreen(
 
 @Preview(showBackground = true, backgroundColor = 0xFFF5F0EE)
 @Composable
-fun HomeScreenPreview() {
+fun ToursScreenPreview() {
     FaernTourismTheme {
-        HomeScreen()
+        ToursScreen()
     }
 }
 

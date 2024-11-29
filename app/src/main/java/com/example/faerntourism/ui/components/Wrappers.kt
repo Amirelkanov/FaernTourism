@@ -38,22 +38,26 @@ fun GeneralScreenWrapper(
     content: @Composable () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Scaffold(topBar = {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.1f)
-                .background(color = backgroundLight)
-        ) {
-            Text(
-                topAppBarTitle,
-                fontSize = 39.sp,
-                fontWeight = FontWeight.Medium,
-                modifier = modifier.padding(horizontal = 5.dp)
-            )
-        }
-    }, bottomBar = { FaernBottomNavigation() }, containerColor = backgroundLight) { contentPadding ->
+    Scaffold(
+        topBar = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.1f)
+                    .background(color = backgroundLight)
+            ) {
+                Text(
+                    topAppBarTitle,
+                    fontSize = 39.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = modifier.padding(horizontal = 5.dp)
+                )
+            }
+        },
+        bottomBar = { FaernBottomNavigation() },
+        containerColor = backgroundLight
+    ) { contentPadding ->
         Box(modifier = Modifier.padding(contentPadding)) {
             content()
         }
@@ -65,8 +69,9 @@ fun GeneralScreenWrapper(
 fun DetailedScreenWrapper(
     mainCardTitle: String,
     secondaryCardTitle: String,
-    painterCard: Painter,
-    content: @Composable () -> Unit
+    painterCard: Painter? = null,
+    content: @Composable () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Scaffold(topBar = {
         MyCard(
@@ -75,7 +80,7 @@ fun DetailedScreenWrapper(
             painterCard
         )
     }) { contentPadding ->
-        Box(modifier = Modifier.padding(contentPadding)) {
+        Box(modifier = modifier.padding(contentPadding)) {
             content()
         }
     }
@@ -118,10 +123,9 @@ fun DetailedScreenWrapperPreview() {
         DetailedScreenWrapper(
             "Лютеранская Кирха",
             "500 м",
-            painterResource(R.drawable.philharmonic)
-        ) {
-            ScrollContent()
-        }
+            painterCard = painterResource(R.drawable.philharmonic),
+            content = { ScrollContent() }
+        )
     }
 }
 

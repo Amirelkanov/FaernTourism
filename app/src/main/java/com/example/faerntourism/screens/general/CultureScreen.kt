@@ -1,15 +1,11 @@
-package com.example.faerntourism.screens
+package com.example.faerntourism.screens.general
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,13 +15,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.faerntourism.cultureArticles
 import com.example.faerntourism.models.UserData
-import com.example.faerntourism.places
 import com.example.faerntourism.ui.components.GeneralScreenWrapper
-import com.example.faerntourism.ui.components.ListItemAdditionalInfo
 import com.example.faerntourism.ui.components.MyListItem
 import com.example.faerntourism.ui.components.SearchBar
 import com.example.faerntourism.ui.theme.FaernTourismTheme
-import com.example.faerntourism.ui.theme.secondaryLight
 
 @Composable
 fun CultureScreen(

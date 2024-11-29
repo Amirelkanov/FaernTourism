@@ -1,9 +1,9 @@
 package com.example.faerntourism
 
 
-import FavScreen
-import PlaceScreen
-import ToursScreen
+import com.example.faerntourism.screens.general.FavScreen
+import com.example.faerntourism.screens.detailed.PlaceScreen
+import com.example.faerntourism.screens.general.ToursScreen
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -36,7 +36,7 @@ import com.example.faerntourism.models.Place
 import com.example.faerntourism.models.Tour
 import com.example.faerntourism.models.service.GoogleAuthUiService
 import com.example.faerntourism.models.service.LocationService
-import com.example.faerntourism.screens.HomeScreen
+import com.example.faerntourism.screens.general.HomeScreen
 import com.example.faerntourism.ui.theme.FaernTourismTheme
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
@@ -242,7 +242,7 @@ class MainActivity : ComponentActivity() {
                     color = Color.White
                 ) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = TOURS_SCREEN) {
+                    NavHost(navController = navController, startDestination = HOME_SCREEN) {
                         routesGraph(navController)
                     }
                 }
@@ -313,7 +313,8 @@ class MainActivity : ComponentActivity() {
             )
         ) { backstackEntry ->
             PlaceScreen(
-                placeId = backstackEntry.arguments?.getString(PLACE_ID)?.toInt(),
+
+                places()[backstackEntry.arguments?.getString(PLACE_ID)?.toInt()!!], // TODO: очев заглукша
             )
         }
     }

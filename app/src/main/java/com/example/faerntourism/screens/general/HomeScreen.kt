@@ -1,17 +1,17 @@
+package com.example.faerntourism.screens.general
+
+
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,27 +19,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.faerntourism.PLACE_ID
+import com.example.faerntourism.PLACE_SCREEN
 import com.example.faerntourism.models.UserData
 import com.example.faerntourism.places
-import com.example.faerntourism.tours
-import com.example.faerntourism.ui.components.FaernBottomNavigation
 import com.example.faerntourism.ui.components.GeneralScreenWrapper
 import com.example.faerntourism.ui.components.ListItemAdditionalInfo
 import com.example.faerntourism.ui.components.MyListItem
 import com.example.faerntourism.ui.components.SearchBar
-import com.example.faerntourism.ui.theme.AppTypography
 import com.example.faerntourism.ui.theme.FaernTourismTheme
 import com.example.faerntourism.ui.theme.secondaryLight
 
 @Composable
-fun ToursScreen(
+fun HomeScreen(
     modifier: Modifier = Modifier,
     userData: UserData? = null,
     onSignInClick: () -> Unit = {},
     onSignOut: () -> Unit = {},
     openScreen: (String) -> Unit = {},
 ) {
-    GeneralScreenWrapper("Туры", content = {
+    GeneralScreenWrapper("Что посетить?", content = {
         Column(
             verticalArrangement = Arrangement.spacedBy(20.dp),
             modifier = modifier
@@ -51,43 +50,34 @@ fun ToursScreen(
                 mutableStateOf(TextFieldValue(""))
             }
 
-            SearchBar(state = textState, trailingContent = {
-                Icon(
-                    imageVector = Icons.Default.CalendarMonth,
-                    contentDescription = null,
-                )
-            })
+            SearchBar(state = textState)
 
             val searchedText = textState.value.text
 
-            val tours = tours()
+            val places = places()
             LazyColumn() {
-                items(tours.filter {
+                itemsIndexed(places.filter {
                     it.name.contains(searchedText, ignoreCase = true)
-                }) { tour ->
+                }) { index, place ->
                     MyListItem(
-                        tour.name, tour.description, 2, tour.img,
+                        place.name, place.description, 2, place.img,
                         additionalInfo = {
                             ListItemAdditionalInfo(
                                 icon = {
                                     Icon(
-                                        Icons.Default.CalendarToday,
+                                        Icons.Default.LocationOn,
                                         contentDescription = null,
                                         modifier = Modifier.size(16.dp),
                                         tint = secondaryLight
                                     )
                                 },
-                                text = "от " + tour.startDate
+                                text = "50 м от вас"
                             )
                         },
-                        trailingContent = {
-                            Text(
-                                "${tour.price}₽",
-                                style = AppTypography.titleMedium,
-                                maxLines = 1,
-                                color = secondaryLight
-                            )
-                        },
+                        modifier = Modifier.clickable(
+                            // TODO: вместо индекса надо будет айдишник из бд пихать
+                            onClick = { openScreen("$PLACE_SCREEN?$PLACE_ID=$index") }
+                        )
                     )
                 }
             }
@@ -97,9 +87,9 @@ fun ToursScreen(
 
 @Preview(showBackground = true, backgroundColor = 0xFFF5F0EE)
 @Composable
-fun ToursScreenPreview() {
+fun HomeScreenPreview() {
     FaernTourismTheme {
-        ToursScreen()
+        HomeScreen()
     }
 }
 
