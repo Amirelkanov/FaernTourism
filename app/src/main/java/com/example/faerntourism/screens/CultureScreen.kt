@@ -54,7 +54,7 @@ fun CultureScreen(
             val cultureArticles = cultureArticles()
             LazyColumn() {
                 items(cultureArticles.filter {
-                    it.name.contains(searcЛhedText, ignoreCase = true)
+                    it.name.contains(searchedText, ignoreCase = true)
                 }) { article ->
                     MyListItem(
                         article.name, article.description, 4, article.img,
