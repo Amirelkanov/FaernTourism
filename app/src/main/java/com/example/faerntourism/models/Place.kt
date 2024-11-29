@@ -1,11 +1,13 @@
 package com.example.faerntourism.models
 
+import android.graphics.drawable.Drawable
 import android.media.Image
+import androidx.compose.ui.graphics.painter.Painter
 import com.google.android.gms.maps.model.LatLng
 
 data class Place(
     val id: Int,
-    val img: Image?, // Пока хз
+    val img: Painter, // Пока хз
     val name: String,
     val description: String, // Мб текст
     val location: LatLng,

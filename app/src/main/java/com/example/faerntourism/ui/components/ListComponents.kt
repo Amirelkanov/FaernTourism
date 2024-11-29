@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -38,7 +39,7 @@ fun MyListItem(
     title: String,
     description: String,
     descriptionMaxLines: Int = 2,
-    painter: ColorPainter = ColorPainter(primaryContainerLight),
+    painter: Painter = ColorPainter(primaryContainerLight),
     additionalInfo: @Composable (() -> Unit)? = null,
     trailingContent: @Composable (() -> Unit)? = null,
     modifier: Modifier = Modifier,

@@ -36,6 +36,7 @@ import com.example.faerntourism.ui.theme.onSurfaceLight
 fun GeneralScreenWrapper(
     topAppBarTitle: String,
     content: @Composable () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Scaffold(topBar = {
         Row(
@@ -49,10 +50,10 @@ fun GeneralScreenWrapper(
                 topAppBarTitle,
                 fontSize = 39.sp,
                 fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(horizontal = 20.dp)
+                modifier = modifier.padding(horizontal = 5.dp)
             )
         }
-    }, bottomBar = { FaernBottomNavigation() }) { contentPadding ->
+    }, bottomBar = { FaernBottomNavigation() }, containerColor = backgroundLight) { contentPadding ->
         Box(modifier = Modifier.padding(contentPadding)) {
             content()
         }
@@ -104,9 +105,9 @@ fun Section(
 @Composable
 fun GeneralScreenWrapperPreview() {
     FaernTourismTheme {
-        GeneralScreenWrapper("Туры") {
+        GeneralScreenWrapper("Туры", content = {
             ScrollContent()
-        }
+        })
     }
 }
 

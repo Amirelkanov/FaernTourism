@@ -46,9 +46,8 @@ fun SearchBar(
         trailingIcon = {
             trailingContent?.invoke()
         },
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(20.dp),
+        modifier = Modifier
+            .fillMaxWidth(),
         placeholder = {
             Text(
                 stringResource(R.string.placeholder_search),
@@ -78,6 +77,7 @@ fun SearchBar(
 @Composable
 fun SearchBarPreview() {
     FaernTourismTheme {
+
         SearchBar(mutableStateOf(TextFieldValue()))
     }
 }
