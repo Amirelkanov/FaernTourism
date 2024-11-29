@@ -4,6 +4,8 @@ const val HOME_SCREEN = "HomeScreen"
 const val FAV_SCREEN = "FavScreen"
 const val TOURS_SCREEN = "ToursScreen"
 const val PLACE_SCREEN = "PlaceScreen"
+const val CULTURE_SCREEN = "CultureScreen"
+const val ACCOUNT_SCREEN = "AccountScreen"
 
 const val PLACE_ID = "placeId"
 const val PLACE_DEFAULT_ID = "-1"

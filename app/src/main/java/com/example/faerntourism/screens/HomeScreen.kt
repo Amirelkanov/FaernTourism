@@ -49,6 +49,7 @@ import com.example.faerntourism.PLACE_SCREEN
 import com.example.faerntourism.R
 import com.example.faerntourism.TOURS_SCREEN
 import com.example.faerntourism.models.UserData
+import com.example.faerntourism.ui.components.FaernBottomNavigation
 import com.example.faerntourism.ui.theme.FaernTourismTheme
 
 // TODO: Поменять поведение скролла. Итемс залезают под боттомэппбар
@@ -126,37 +127,6 @@ fun SearchBar(
     )
 }
 
-
-// todo: поведение с selected
-// todo: обобщить для всех окон
-@Composable
-fun FaernBottomNavigation(modifier: Modifier = Modifier, openScreen: (String) -> Unit = {}) {
-    NavigationBar(
-        containerColor = MaterialTheme.colorScheme.surfaceVariant, modifier = modifier
-    ) {
-        NavigationBarItem(icon = {
-            Icon(
-                imageVector = Icons.Default.Favorite, contentDescription = null
-            )
-        }, label = {
-            Text(stringResource(R.string.bottom_navigation_favourite))
-        }, selected = false, onClick = { openScreen(FAV_SCREEN) })
-        NavigationBarItem(icon = {
-            Icon(
-                imageVector = Icons.Default.Home, contentDescription = null
-            )
-        }, label = {
-            Text(stringResource(R.string.bottom_navigation_home))
-        }, selected = false, onClick = { openScreen(HOME_SCREEN) })
-        NavigationBarItem(icon = {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.MenuBook, contentDescription = null
-            )
-        }, label = {
-            Text(stringResource(R.string.bottom_navigation_tours))
-        }, selected = false, onClick = { openScreen(TOURS_SCREEN) })
-    }
-}
 
 
 @Composable
