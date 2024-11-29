@@ -39,7 +39,7 @@ fun MyListItem(
     title: String,
     description: String,
     descriptionMaxLines: Int = 2,
-    painter: Painter = ColorPainter(primaryContainerLight),
+    painter: Painter? = null,
     additionalInfo: @Composable (() -> Unit)? = null,
     trailingContent: @Composable (() -> Unit)? = null,
     modifier: Modifier = Modifier,
@@ -56,7 +56,7 @@ fun MyListItem(
                 .padding(5.dp)
         ) {
             Image(
-                painter = painter, contentScale = ContentScale.Crop, contentDescription = null,
+                painter = if (painter !== null) painter else ColorPainter(primaryContainerLight), contentScale = ContentScale.Crop, contentDescription = null,
                 modifier = Modifier
                     .size(80.dp)
                     .clip(RoundedCornerShape(5.dp)),

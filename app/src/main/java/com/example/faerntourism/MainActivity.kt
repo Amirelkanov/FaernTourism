@@ -31,6 +31,7 @@ import androidx.navigation.navArgument
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.example.faerntourism.models.CultureArticle
 import com.example.faerntourism.models.Place
 import com.example.faerntourism.models.Tour
 import com.example.faerntourism.models.service.GoogleAuthUiService
@@ -159,6 +160,46 @@ fun tours() = listOf(
         "28.11.2024",
         1500,
         "google.com"
+    ),
+)
+
+@Composable
+fun cultureArticles() = listOf(
+    CultureArticle(
+        1, null, "Кто такой Донбеттыр?", "Lorem ipsum dolor sit amet, consectetur\n" +
+                "adipiscing elit, sed do eiusmod tempor\n" +
+                "incididunt ut labore et dolore magna\n" +
+                "aliqua"
+    ),
+    CultureArticle(
+        2, null, "Кто такой Донбеттыр?", "Lorem ipsum dolor sit amet, consectetur\n" +
+                "adipiscing elit, sed do eiusmod tempor\n" +
+                "incididunt ut labore et dolore magna\n" +
+                "aliqua"
+    ),
+    CultureArticle(
+        3, null, "Кто такой Донбеттыр?", "Lorem ipsum dolor sit amet, consectetur\n" +
+                "adipiscing elit, sed do eiusmod tempor\n" +
+                "incididunt ut labore et dolore magna\n" +
+                "aliqua"
+    ),
+    CultureArticle(
+        4, null, "Кто такой Донбеттыр?", "Lorem ipsum dolor sit amet, consectetur\n" +
+                "adipiscing elit, sed do eiusmod tempor\n" +
+                "incididunt ut labore et dolore magna\n" +
+                "aliqua"
+    ),
+    CultureArticle(
+        5, null, "Кто такой Донбеттыр?", "Lorem ipsum dolor sit amet, consectetur\n" +
+                "adipiscing elit, sed do eiusmod tempor\n" +
+                "incididunt ut labore et dolore magna\n" +
+                "aliqua"
+    ),
+    CultureArticle(
+        6, null, "Кто такой Донбеттыр?", "Lorem ipsum dolor sit amet, consectetur\n" +
+                "adipiscing elit, sed do eiusmod tempor\n" +
+                "incididunt ut labore et dolore magna\n" +
+                "aliqua"
     ),
 )
 
