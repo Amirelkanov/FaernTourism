@@ -27,7 +27,6 @@ import com.example.faerntourism.ui.components.SearchBar
 import com.example.faerntourism.ui.theme.FaernTourismTheme
 import com.example.faerntourism.ui.theme.secondaryLight
 
-// TODO: Поменять поведение скролла. Итемс залезают под боттомэппбар
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,

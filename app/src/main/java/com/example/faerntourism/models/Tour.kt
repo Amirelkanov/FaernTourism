@@ -1,14 +1,14 @@
 package com.example.faerntourism.models
 
-import android.graphics.drawable.Drawable
-import android.media.Image
 import androidx.compose.ui.graphics.painter.Painter
 import com.google.android.gms.maps.model.LatLng
 
-data class Place(
+data class Tour (
     val id: Int,
     val img: Painter,
     val name: String,
     val description: String,
-    val location: LatLng,
+    val startDate: String, // TODO: мб какой-нить timestamp
+    val price: Int,
+    val linkToTour: String
 )

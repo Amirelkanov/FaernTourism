@@ -32,6 +32,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.faerntourism.models.Place
+import com.example.faerntourism.models.Tour
 import com.example.faerntourism.models.service.GoogleAuthUiService
 import com.example.faerntourism.models.service.LocationService
 import com.example.faerntourism.screens.HomeScreen
@@ -94,6 +95,73 @@ fun places() = listOf(
     )
 )
 
+@Composable
+fun tours() = listOf(
+    Tour(
+        1,
+        painterResource(R.drawable.kurtarin_cave),
+        "Куртатинское ущелье",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed",
+        "28.11.2024",
+        1500,
+        "google.com"
+    ),
+    Tour(
+        2,
+        painterResource(R.drawable.kurtarin_cave),
+        "Куртатинское ущелье",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed",
+        "28.11.2024",
+        1500,
+        "google.com"
+    ),
+    Tour(
+        3,
+        painterResource(R.drawable.kurtarin_cave),
+        "Куртатинское ущелье",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed",
+        "28.11.2024",
+        1500,
+        "google.com"
+    ),
+    Tour(
+        4,
+        painterResource(R.drawable.kurtarin_cave),
+        "Куртатинское ущелье",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed",
+        "28.11.2024",
+        1500,
+        "google.com"
+    ),
+    Tour(
+        5,
+        painterResource(R.drawable.kurtarin_cave),
+        "Куртатинское ущелье",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed",
+        "28.11.2024",
+        1500,
+        "google.com"
+    ),
+    Tour(
+        6,
+        painterResource(R.drawable.kurtarin_cave),
+        "Куртатинское ущелье",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed",
+        "28.11.2024",
+        1500,
+        "google.com"
+    ),
+    Tour(
+        7,
+        painterResource(R.drawable.kurtarin_cave),
+        "Куртатинское ущелье",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed",
+        "28.11.2024",
+        1500,
+        "google.com"
+    ),
+)
+
 class MainActivity : ComponentActivity() {
 
     private val googleAuthUiClient by lazy {
@@ -133,7 +201,7 @@ class MainActivity : ComponentActivity() {
                     color = Color.White
                 ) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = HOME_SCREEN) {
+                    NavHost(navController = navController, startDestination = TOURS_SCREEN) {
                         routesGraph(navController)
                     }
                 }
