@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.faerntourism.HOME_SCREEN
 import com.example.faerntourism.R
 import com.example.faerntourism.ui.theme.AppTypography
 import com.example.faerntourism.ui.theme.FaernTourismTheme
@@ -36,6 +37,8 @@ import com.example.faerntourism.ui.theme.onSurfaceLight
 fun GeneralScreenWrapper(
     topAppBarTitle: String,
     content: @Composable () -> Unit,
+    currentScreen: String,
+    openScreen: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -55,7 +58,7 @@ fun GeneralScreenWrapper(
                 )
             }
         },
-        bottomBar = { FaernBottomNavigation() },
+        bottomBar = { FaernBottomNavigation(openScreen, currentScreen) },
         containerColor = backgroundLight
     ) { contentPadding ->
         Box(modifier = Modifier.padding(contentPadding)) {
@@ -71,13 +74,15 @@ fun DetailedScreenWrapper(
     secondaryCardTitle: String,
     painterCard: Painter? = null,
     content: @Composable () -> Unit,
+    navigateBack: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Scaffold(topBar = {
         MyCard(
             mainCardTitle,
             secondaryCardTitle,
-            painterCard
+            painterCard,
+            navigateBack = navigateBack
         )
     }) { contentPadding ->
         Box(modifier = modifier.padding(contentPadding)) {
@@ -112,7 +117,7 @@ fun GeneralScreenWrapperPreview() {
     FaernTourismTheme {
         GeneralScreenWrapper("Туры", content = {
             ScrollContent()
-        })
+        }, HOME_SCREEN, {})
     }
 }
 

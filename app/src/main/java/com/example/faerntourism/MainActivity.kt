@@ -10,6 +10,7 @@ import android.app.NotificationManager
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -36,6 +37,9 @@ import com.example.faerntourism.models.Place
 import com.example.faerntourism.models.Tour
 import com.example.faerntourism.models.service.GoogleAuthUiService
 import com.example.faerntourism.models.service.LocationService
+import com.example.faerntourism.screens.detailed.ArticleScreen
+import com.example.faerntourism.screens.general.AccountScreen
+import com.example.faerntourism.screens.general.CultureScreen
 import com.example.faerntourism.screens.general.HomeScreen
 import com.example.faerntourism.ui.theme.FaernTourismTheme
 import com.google.android.gms.maps.model.LatLng
@@ -172,7 +176,10 @@ fun tours() = listOf(
 @Composable
 fun cultureArticles() = listOf(
     CultureArticle(
-        1, null, "Кто такой Донбеттыр?", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum aliquam turpis velit, ac ultrices libero vehicula et. Sed ac nibh tellus. Suspendisse congue ac nulla a ultricies. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec quam diam. Mauris in consectetur magna. Nunc pharetra, dui nec molestie fermentum, est est gravida augue, a mattis diam sem at erat. Praesent mattis, leo et euismod condimentum, ante ex ultricies ante, feugiat pulvinar mauris metus at orci. Nullam eu justo eu neque interdum bibendum eu in diam. Donec eu magna non urna pretium tincidunt. Suspendisse eu lorem tincidunt, scelerisque sapien vel, pharetra neque. Integer aliquam condimentum varius.\n" +
+        1,
+        null,
+        "Кто такой Донбеттыр?",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum aliquam turpis velit, ac ultrices libero vehicula et. Sed ac nibh tellus. Suspendisse congue ac nulla a ultricies. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec quam diam. Mauris in consectetur magna. Nunc pharetra, dui nec molestie fermentum, est est gravida augue, a mattis diam sem at erat. Praesent mattis, leo et euismod condimentum, ante ex ultricies ante, feugiat pulvinar mauris metus at orci. Nullam eu justo eu neque interdum bibendum eu in diam. Donec eu magna non urna pretium tincidunt. Suspendisse eu lorem tincidunt, scelerisque sapien vel, pharetra neque. Integer aliquam condimentum varius.\n" +
                 "\n" +
                 "Donec ut egestas arcu. Nullam magna nisl, sollicitudin faucibus arcu eget, condimentum lobortis turpis. Vivamus facilisis pulvinar purus in pulvinar. Maecenas quis dolor sodales, ornare mi eu, mollis elit. Duis eleifend dolor augue, a condimentum elit interdum quis. Pellentesque consectetur, lorem sit amet semper pellentesque, diam enim tristique tortor, at facilisis orci mauris quis sem. Aenean iaculis euismod iaculis. Sed porta hendrerit metus at rhoncus. Suspendisse interdum venenatis odio, et efficitur leo pulvinar nec. Donec nec mauris rutrum, molestie diam id, mollis est. Duis commodo nisi sem, sed egestas quam dictum ac. Nunc ut dignissim ligula. Sed non ex faucibus, rhoncus libero a, tristique erat. Maecenas lobortis sapien sed nibh fringilla, quis egestas diam dictum. In hac habitasse platea dictumst.\n" +
                 "\n" +
@@ -251,6 +258,7 @@ class MainActivity : ComponentActivity() {
                     color = Color.White
                 ) {
                     val navController = rememberNavController()
+
                     NavHost(navController = navController, startDestination = HOME_SCREEN) {
                         routesGraph(navController)
                     }
@@ -307,12 +315,20 @@ class MainActivity : ComponentActivity() {
                 openScreen = { route -> navController.navigate(route) }
             )
         }
-        composable(FAV_SCREEN) {
-            FavScreen(openScreen = { route -> navController.navigate(route) })
-        }
+
         composable(TOURS_SCREEN) {
             ToursScreen(openScreen = { route -> navController.navigate(route) })
         }
+        composable(CULTURE_SCREEN) {
+            CultureScreen(openScreen = { route -> navController.navigate(route) })
+        }
+        composable(ACCOUNT_SCREEN) {
+            AccountScreen() // TODO
+        }
+        composable(FAV_SCREEN) {
+            FavScreen(openScreen = { route -> navController.navigate(route) })
+        }
+
         composable(
             route = "$PLACE_SCREEN$PLACE_ID_ARG",
             arguments = listOf(
@@ -322,8 +338,24 @@ class MainActivity : ComponentActivity() {
             )
         ) { backstackEntry ->
             PlaceScreen(
+                places()[backstackEntry.arguments?.getString(PLACE_ID)
+                    ?.toInt()!!], // TODO: очев заглукша
+                navigateBack = { navController.popBackStack() }
+            )
+        }
 
-                places()[backstackEntry.arguments?.getString(PLACE_ID)?.toInt()!!], // TODO: очев заглукша
+        composable(
+            route = "$CULTURE_SCREEN$ARTICLE_ID_ARG",
+            arguments = listOf(
+                navArgument(name = ARTICLE_ID) {
+                    defaultValue = ARTICLE_DEFAULT_ID
+                }
+            )
+        ) { backstackEntry ->
+            ArticleScreen(
+                cultureArticles()[backstackEntry.arguments?.getString(ARTICLE_ID)
+                    ?.toInt()!!], // TODO: очев заглукша
+                navigateBack = { navController.popBackStack() }
             )
         }
     }

@@ -10,3 +10,7 @@ const val ACCOUNT_SCREEN = "AccountScreen"
 const val PLACE_ID = "placeId"
 const val PLACE_DEFAULT_ID = "-1"
 const val PLACE_ID_ARG = "?$PLACE_ID={$PLACE_ID}"
+
+const val ARTICLE_ID = "articleId"
+const val ARTICLE_DEFAULT_ID = "-1"
+const val ARTICLE_ID_ARG = "?$ARTICLE_ID={$ARTICLE_ID}"

@@ -31,6 +31,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun PlaceScreen(
     place: Place,
+    navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var selectedTabIndex by remember { mutableStateOf(0) } // Используем mutableStateOf для совместимости
@@ -115,7 +116,8 @@ fun PlaceScreen(
                     }
                 }
             }
-        }
+        },
+        navigateBack = navigateBack
     )
 }
 
@@ -124,6 +126,6 @@ fun PlaceScreen(
 @Composable
 fun PlaceScreenPreview() {
     FaernTourismTheme {
-        PlaceScreen(places()[0])
+        PlaceScreen(places()[0], {})
     }
 }

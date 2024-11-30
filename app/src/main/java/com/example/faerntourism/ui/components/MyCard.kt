@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -40,6 +41,7 @@ fun MyCard(
     mainTitle: String = "",
     secondaryTitle: String = "",
     painter: Painter? = null,
+    navigateBack: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -52,7 +54,8 @@ fun MyCard(
             Image(
                 painter = if (painter !== null) painter else ColorPainter(primaryContainerLight),
                 contentScale = ContentScale.Crop,
-                contentDescription = null
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize()
             )
             Column(
                 modifier = Modifier
@@ -67,7 +70,7 @@ fun MyCard(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     IconButton(
-                        onClick = {}
+                        onClick = {navigateBack()}
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -120,7 +123,7 @@ fun MyCardPreview() {
         MyCard(
             "Лютеранская Кирха",
             "500 м",
-            painterResource(R.drawable.philharmonic)
+            painterResource(R.drawable.kurtarin_cave)
         )
     }
 }

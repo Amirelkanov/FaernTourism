@@ -46,22 +46,22 @@ data class BottomNavigationItem(
 )
 
 @Composable
-fun FaernBottomNavigation(modifier: Modifier = Modifier, openScreen: (String) -> Unit = {}) {
-    // TODO: разберись
-    var selectedItemIndex by rememberSaveable {
-        mutableIntStateOf(0)
-    }
+fun FaernBottomNavigation(openScreen: (String) -> Unit,
+                          currentScreen: String,
+                          navbarItems: List<BottomNavigationItem> = navBarItems(),
+                          modifier: Modifier = Modifier,
+                        ) {
 
+    val selectedItemIndex: Int = navBarItems().indexOfFirst{it.navigateScreen == currentScreen}
     NavigationBar(
         containerColor = surfaceContainerLight,
         contentColor = onPrimaryContainerLight,
         modifier = modifier,
     ) {
-        navBarItems().forEachIndexed { index, item ->
+        navbarItems.forEachIndexed { index, item ->
             NavigationBarItem(
                 selected = selectedItemIndex == index,
                 onClick = {
-                    selectedItemIndex = index
                     openScreen(item.navigateScreen)
                 },
                 colors = NavigationBarItemDefaults
@@ -120,5 +120,5 @@ private fun navBarItems() = listOf(
 @Preview(showBackground = true, backgroundColor = 0xFFF5F0EE)
 @Composable
 fun BottomNavigationPreview() {
-    FaernTourismTheme { FaernBottomNavigation(Modifier.padding(top = 24.dp)) }
+    FaernTourismTheme { FaernBottomNavigation({}, currentScreen = HOME_SCREEN, modifier = Modifier.padding(top = 24.dp)) }
 }

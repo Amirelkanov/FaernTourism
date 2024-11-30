@@ -1,5 +1,6 @@
 package com.example.faerntourism.screens.general
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,9 +17,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.faerntourism.TOURS_SCREEN
 import com.example.faerntourism.models.UserData
 import com.example.faerntourism.tours
 import com.example.faerntourism.ui.components.GeneralScreenWrapper
@@ -31,11 +34,11 @@ import com.example.faerntourism.ui.theme.secondaryLight
 
 @Composable
 fun ToursScreen(
+    openScreen: (String) -> Unit,
     modifier: Modifier = Modifier,
     userData: UserData? = null,
     onSignInClick: () -> Unit = {},
     onSignOut: () -> Unit = {},
-    openScreen: (String) -> Unit = {},
 ) {
     GeneralScreenWrapper("Туры", content = {
         Column(
@@ -56,10 +59,11 @@ fun ToursScreen(
                 )
             })
 
+            val uriHandler = LocalUriHandler.current
             val searchedText = textState.value.text
 
             val tours = tours()
-            LazyColumn() {
+            LazyColumn {
                 items(tours.filter {
                     it.name.contains(searchedText, ignoreCase = true)
                 }) { tour ->
@@ -86,18 +90,19 @@ fun ToursScreen(
                                 color = secondaryLight
                             )
                         },
+                        modifier.clickable(onClick = { uriHandler.openUri("https://www.google.com") })
                     )
                 }
             }
         }
-    }, modifier = Modifier.padding(horizontal = 10.dp))
+    }, TOURS_SCREEN, openScreen, modifier = Modifier.padding(horizontal = 10.dp))
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFF5F0EE)
 @Composable
 fun ToursScreenPreview() {
     FaernTourismTheme {
-        ToursScreen()
+        ToursScreen({})
     }
 }
 

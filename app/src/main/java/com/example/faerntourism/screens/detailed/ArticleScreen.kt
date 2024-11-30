@@ -17,6 +17,7 @@ import com.example.faerntourism.ui.theme.FaernTourismTheme
 @Composable
 fun ArticleScreen(
     article: CultureArticle,
+    navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     DetailedScreenWrapper(
@@ -31,7 +32,8 @@ fun ArticleScreen(
                     )
                 }
             }
-        }
+        },
+        navigateBack = navigateBack
     )
 }
 
@@ -40,6 +42,6 @@ fun ArticleScreen(
 @Composable
 fun ArticleScreenPreview() {
     FaernTourismTheme {
-        ArticleScreen(cultureArticles()[0])
+        ArticleScreen(cultureArticles()[0], {})
     }
 }
