@@ -116,6 +116,6 @@ fun PlaceScreen(
                 }
             }
         },
-        painterCard = place.img,
+        painterCard = null,
     )
 }

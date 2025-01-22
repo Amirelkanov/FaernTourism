@@ -8,8 +8,11 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -21,6 +24,7 @@ import com.example.faerntourism.ui.screens.general.CultureScreen
 import com.example.faerntourism.ui.screens.general.HomeScreen
 import com.example.faerntourism.ui.screens.general.ToursScreen
 import com.example.faerntourism.ui.AuthViewModel
+import com.example.faerntourism.ui.PlacesViewModel
 import com.example.faerntourism.ui.theme.FaernTourismTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -55,13 +59,16 @@ fun FaernNavHost(
 ) {
     NavHost(navController = navController, startDestination = Home.route) {
         composable(route = Home.route) {
+            val placesViewModel: PlacesViewModel = hiltViewModel()
             HomeScreen(
                 onBottomTabSelected = { newScreen ->
                     navController.navigateSingleTopTo(newScreen.route)
                 },
                 onPlaceClick = { placeId ->
                     navController.navigateToSinglePlace(placeId)
-                }
+                },
+                placesViewState = placesViewModel.placesViewStateFlow.collectAsState().value,
+                retryAction = placesViewModel::getPlacesData
             )
         }
         composable(route = Tours.route) {

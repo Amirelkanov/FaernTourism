@@ -8,4 +8,7 @@
     <string name="culture">Культура</string>
     <string name="account">Аккаунт</string>
     <string name="philarmonic">Филармония</string>
+    <string name="loading_failed">Не удалось загрузить</string>
+    <string name="retry">Попробовать снова</string>
+    <string name="loading">Загрузка</string>
 </resources>
