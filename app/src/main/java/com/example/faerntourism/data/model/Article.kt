@@ -1,6 +1,6 @@
 package com.example.faerntourism.data.model
 
-data class CultureArticle(
+data class Article(
     val id: String = "",
     val imgLink: String = "",
     val name: String = "",

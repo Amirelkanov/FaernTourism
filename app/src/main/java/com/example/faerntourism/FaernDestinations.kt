@@ -53,12 +53,12 @@ object Tours : FaernDestination {
     override val route: String = "tours"
 }
 
-object Culture : FaernDestination {
+object Articles : FaernDestination {
     override val activeIcon: ImageVector = Icons.AutoMirrored.Filled.LibraryBooks
     override val inactiveIcon: ImageVector = Icons.AutoMirrored.Outlined.LibraryBooks
-    override val titleResource: Int = R.string.culture
-    override val topAppBarTitle: String = "О культуре"
-    override val route: String = "culture"
+    override val titleResource: Int = R.string.articles
+    override val topAppBarTitle: String = "Статьи"
+    override val route: String = "articles"
 }
 
 object Account : FaernDestination {
@@ -86,4 +86,4 @@ object SingleArticle : DetailedFaernDestination {
 }
 
 // Screens to be displayed in the navigation bottom bar
-val faernBottomNavigationBarScreens = listOf(Home, Tours, Culture, Account)
+val faernBottomNavigationBarScreens = listOf(Home, Tours, Articles, Account)

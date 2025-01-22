@@ -3,10 +3,9 @@ package com.example.faerntourism.data
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 import com.example.faerntourism.R
-import com.example.faerntourism.data.model.CultureArticle
+import com.example.faerntourism.data.model.Article
 import com.example.faerntourism.data.model.Place
 import com.example.faerntourism.data.model.Tour
-import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.GeoPoint
 
 
@@ -121,32 +120,32 @@ fun tours() = listOf(
 )
 
 @Composable
-fun cultureArticles() = listOf(
-    CultureArticle(
+fun articles() = listOf(
+    Article(
         id = "1",
         imgLink = "https://example.com/images/article1.jpg",
         name = "The Art of Pottery",
         description = "Explore the intricate art of pottery and its cultural significance through the ages."
     ),
-    CultureArticle(
+    Article(
         id = "2",
         imgLink = "https://example.com/images/article2.jpg",
         name = "Traditional Dance Forms",
         description = "A deep dive into the world of traditional dances that tell stories of heritage and tradition."
     ),
-    CultureArticle(
+    Article(
         id = "3",
         imgLink = "https://example.com/images/article3.jpg",
         name = "Ancient Architecture",
         description = "Discover the marvels of ancient architecture and the stories they tell about civilizations."
     ),
-    CultureArticle(
+    Article(
         id = "4",
         imgLink = "https://example.com/images/article4.jpg",
         name = "Culinary Heritage",
         description = "A journey through the flavors and recipes passed down through generations."
     ),
-    CultureArticle(
+    Article(
         id = "5",
         imgLink = "https://example.com/images/article5.jpg",
         name = "Folklore and Mythology",

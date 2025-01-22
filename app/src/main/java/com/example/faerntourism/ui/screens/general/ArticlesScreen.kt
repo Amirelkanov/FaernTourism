@@ -13,9 +13,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import com.example.faerntourism.Culture
+import com.example.faerntourism.Articles
 import com.example.faerntourism.FaernDestination
-import com.example.faerntourism.data.model.CultureArticle
+import com.example.faerntourism.data.model.Article
 import com.example.faerntourism.ui.components.GeneralScreenWrapper
 import com.example.faerntourism.ui.components.MyListItem
 import com.example.faerntourism.ui.components.SearchBar
@@ -23,7 +23,7 @@ import com.example.faerntourism.ui.screens.side.ErrorScreen
 import com.example.faerntourism.ui.screens.side.LoadingScreen
 
 @Composable
-fun CultureScreen(
+fun ArticlesScreen(
     onBottomTabSelected: (FaernDestination) -> Unit,
     onArticleClick: (String) -> Unit,
     articlesViewState: ArticlesViewState,
@@ -31,9 +31,9 @@ fun CultureScreen(
     modifier: Modifier = Modifier,
 ) {
     GeneralScreenWrapper(
-        currentScreen = Culture, onBottomTabSelected = onBottomTabSelected, content = {
+        currentScreen = Articles, onBottomTabSelected = onBottomTabSelected, content = {
             when (articlesViewState) {
-                is ArticlesViewState.Success -> CultureArticlesFeedScreen(
+                is ArticlesViewState.Success -> ArticlesFeedScreen(
                     articlesViewState.articles, onArticleClick, modifier
                 )
 
@@ -49,8 +49,8 @@ fun CultureScreen(
 
 
 @Composable
-fun CultureArticlesFeedScreen(
-    articles: List<CultureArticle>, onArticleClick: (String) -> Unit, modifier: Modifier = Modifier
+fun ArticlesFeedScreen(
+    articles: List<Article>, onArticleClick: (String) -> Unit, modifier: Modifier = Modifier
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(20.dp),

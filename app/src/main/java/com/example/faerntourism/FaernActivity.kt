@@ -20,7 +20,7 @@ import com.example.faerntourism.ui.screens.general.ArticlesViewModel
 import com.example.faerntourism.ui.screens.detailed.ArticleScreen
 import com.example.faerntourism.ui.screens.detailed.PlaceScreen
 import com.example.faerntourism.ui.screens.general.AccountScreen
-import com.example.faerntourism.ui.screens.general.CultureScreen
+import com.example.faerntourism.ui.screens.general.ArticlesScreen
 import com.example.faerntourism.ui.screens.general.HomeScreen
 import com.example.faerntourism.ui.screens.general.ToursScreen
 import com.example.faerntourism.ui.AuthViewModel
@@ -78,9 +78,9 @@ fun FaernNavHost(
                 },
             )
         }
-        composable(route = Culture.route) {
+        composable(route = Articles.route) {
             val articlesViewModel: ArticlesViewModel = hiltViewModel()
-            CultureScreen(
+            ArticlesScreen(
                 onBottomTabSelected = { newScreen ->
                     navController.navigateSingleTopTo(newScreen.route)
                 },

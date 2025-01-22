@@ -3,7 +3,7 @@ package com.example.faerntourism.ui.screens.general
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.faerntourism.data.FireStoreRepository
-import com.example.faerntourism.data.model.CultureArticle
+import com.example.faerntourism.data.model.Article
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 
 sealed interface ArticlesViewState {
-    data class Success(val articles: List<CultureArticle>) : ArticlesViewState
+    data class Success(val articles: List<Article>) : ArticlesViewState
     data class Error(val errorMsg: String) : ArticlesViewState
     data object Loading : ArticlesViewState
 }

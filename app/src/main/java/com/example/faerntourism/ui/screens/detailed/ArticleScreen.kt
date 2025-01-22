@@ -7,17 +7,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.faerntourism.data.cultureArticles
+import com.example.faerntourism.data.articles
 import com.example.faerntourism.ui.components.DetailedScreenWrapper
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArticleScreen(
-    articleId: String? = cultureArticles().first().id.toString(),
+    articleId: String? = articles().first().id.toString(),
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val article = cultureArticles()[articleId?.toInt()!!] // TODO: надо переделывать
+    val article = articles()[articleId?.toInt()!!] // TODO: надо переделывать
 
 
     DetailedScreenWrapper(
