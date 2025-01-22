@@ -1,52 +1,18 @@
-package com.example.faerntourism
+package com.example.faerntourism.data
 
-
-import com.example.faerntourism.screens.general.FavScreen
-import com.example.faerntourism.screens.detailed.PlaceScreen
-import com.example.faerntourism.screens.general.ToursScreen
-import android.Manifest
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.content.Intent
-import android.os.Build
-import android.os.Bundle
-import android.util.Log
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.core.app.ActivityCompat
-import androidx.credentials.CredentialManager
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
-import com.example.faerntourism.models.CultureArticle
-import com.example.faerntourism.models.Place
-import com.example.faerntourism.models.Tour
-import com.example.faerntourism.models.service.GoogleAuthUiService
-import com.example.faerntourism.models.service.LocationService
-import com.example.faerntourism.screens.detailed.ArticleScreen
-import com.example.faerntourism.screens.general.AccountScreen
-import com.example.faerntourism.screens.general.CultureScreen
-import com.example.faerntourism.screens.general.HomeScreen
-import com.example.faerntourism.ui.theme.FaernTourismTheme
+import com.example.faerntourism.R
+import com.example.faerntourism.data.model.CultureArticle
+import com.example.faerntourism.data.model.Place
+import com.example.faerntourism.data.model.Tour
 import com.google.android.gms.maps.model.LatLng
-import kotlinx.coroutines.launch
-import java.util.concurrent.TimeUnit
 
-// TODO: Очевиднейшая заглушка
+
+/**
+ * Hardcoded data for app
+ */
+
 @Composable
 fun places() = listOf(
     Place(
@@ -218,145 +184,3 @@ fun cultureArticles() = listOf(
                 "aliqua"
     ),
 )
-
-class MainActivity : ComponentActivity() {
-
-    private val googleAuthUiClient by lazy {
-        GoogleAuthUiService(
-            context = applicationContext,
-            credentialManager = CredentialManager.create(applicationContext)
-        )
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.POST_NOTIFICATIONS
-            ),
-            0
-        )
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createDailyNotificationChannel()
-            scheduleDailyNotification()
-        }
-
-        Intent(applicationContext, LocationService::class.java).apply {
-            action = LocationService.ACTION_START
-            startService(this)
-        }
-
-        setContent {
-            FaernTourismTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = Color.White
-                ) {
-                    val navController = rememberNavController()
-
-                    NavHost(navController = navController, startDestination = HOME_SCREEN) {
-                        routesGraph(navController)
-                    }
-                }
-            }
-        }
-    }
-
-
-    // TODO : как сделаешь лабу по воркерам, подумай, куда можно перетащить
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun createDailyNotificationChannel() {
-        val notificationManager =
-            applicationContext.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-
-        val channel = NotificationChannel(
-            DAILY_NOTIFICATION_CHANNEL_ID,
-            "Daily Notification",
-            NotificationManager.IMPORTANCE_DEFAULT
-        )
-        notificationManager.createNotificationChannel(channel)
-    }
-
-    private fun scheduleDailyNotification() {
-        val workRequest = PeriodicWorkRequestBuilder<DailyNotificationWorker>(
-            12, TimeUnit.HOURS,
-            30, TimeUnit.MINUTES
-        ).build()
-
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            "DailyNotification",
-            ExistingPeriodicWorkPolicy.KEEP,
-            workRequest
-        )
-    }
-
-
-    private fun NavGraphBuilder.routesGraph(navController: NavController) {
-        composable(HOME_SCREEN) {
-            HomeScreen(
-                userData = googleAuthUiClient.getSignedInUser(),
-                onSignInClick = {
-                    lifecycleScope.launch {
-                        googleAuthUiClient.signIn()
-                        navController.navigate(HOME_SCREEN)
-                    }
-                },
-                onSignOut = {
-                    lifecycleScope.launch {
-                        googleAuthUiClient.signOut()
-                        navController.navigate(HOME_SCREEN)
-                    }
-                },
-                openScreen = { route -> navController.navigate(route) }
-            )
-        }
-
-        composable(TOURS_SCREEN) {
-            ToursScreen(openScreen = { route -> navController.navigate(route) })
-        }
-        composable(CULTURE_SCREEN) {
-            CultureScreen(openScreen = { route -> navController.navigate(route) })
-        }
-        composable(ACCOUNT_SCREEN) {
-            AccountScreen() // TODO
-        }
-        composable(FAV_SCREEN) {
-            FavScreen(openScreen = { route -> navController.navigate(route) })
-        }
-
-        composable(
-            route = "$PLACE_SCREEN$PLACE_ID_ARG",
-            arguments = listOf(
-                navArgument(name = PLACE_ID) {
-                    defaultValue = PLACE_DEFAULT_ID
-                }
-            )
-        ) { backstackEntry ->
-            PlaceScreen(
-                places()[backstackEntry.arguments?.getString(PLACE_ID)
-                    ?.toInt()!!], // TODO: очев заглукша
-                navigateBack = { navController.popBackStack() }
-            )
-        }
-
-        composable(
-            route = "$CULTURE_SCREEN$ARTICLE_ID_ARG",
-            arguments = listOf(
-                navArgument(name = ARTICLE_ID) {
-                    defaultValue = ARTICLE_DEFAULT_ID
-                }
-            )
-        ) { backstackEntry ->
-            ArticleScreen(
-                cultureArticles()[backstackEntry.arguments?.getString(ARTICLE_ID)
-                    ?.toInt()!!], // TODO: очев заглукша
-                navigateBack = { navController.popBackStack() }
-            )
-        }
-    }
-}

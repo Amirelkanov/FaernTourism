@@ -5,7 +5,7 @@ import android.content.Context
 import android.location.Location
 import android.location.LocationManager
 import android.os.Looper
-import com.example.faerntourism.hasLocationPermission
+
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -29,9 +29,9 @@ class LocationClient(
         accuracy: Int = Priority.PRIORITY_BALANCED_POWER_ACCURACY,
     ): Flow<Location> {
         return callbackFlow {
-            if (!context.hasLocationPermission()) {
+           /* if (!context.hasLocationPermission()) {
                 throw LocationException("Missing location permission")
-            }
+            }*/
 
             val locationManager =
                 context.getSystemService(Context.LOCATION_SERVICE) as LocationManager

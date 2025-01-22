@@ -1,4 +1,4 @@
-package com.example.faerntourism.models
+package com.example.faerntourism.data.model
 
 data class UserData(
     val userId: String,

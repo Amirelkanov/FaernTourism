@@ -6,24 +6,24 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.faerntourism.cultureArticles
-import com.example.faerntourism.models.CultureArticle
+import com.example.faerntourism.data.cultureArticles
 import com.example.faerntourism.ui.components.DetailedScreenWrapper
-import com.example.faerntourism.ui.theme.FaernTourismTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArticleScreen(
-    article: CultureArticle,
+    articleId: String? = cultureArticles().first().id.toString(),
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val article = cultureArticles()[articleId?.toInt()!!] // TODO: надо переделывать
+
+
     DetailedScreenWrapper(
-        article.name,
-        "500 м",
-        article.img,
+        mainCardTitle = article.name,
+        secondaryCardTitle = "500 м",
+        navigateBack = navigateBack,
         content = {
             LazyColumn(contentPadding = PaddingValues(10.dp)) {
                 item {
@@ -33,15 +33,6 @@ fun ArticleScreen(
                 }
             }
         },
-        navigateBack = navigateBack
+        painterCard = article.img,
     )
-}
-
-
-@Preview(showBackground = true, backgroundColor = 0xFFF5F0EE)
-@Composable
-fun ArticleScreenPreview() {
-    FaernTourismTheme {
-        ArticleScreen(cultureArticles()[0], {})
-    }
 }

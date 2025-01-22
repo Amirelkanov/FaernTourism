@@ -1,12 +1,11 @@
-package com.example.faerntourism.models.service
+package com.example.faerntourism.network
 
 import android.content.Context
-import android.util.Log
 import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import com.example.faerntourism.R
-import com.example.faerntourism.models.UserData
+import com.example.faerntourism.data.model.UserData
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.GoogleAuthProvider

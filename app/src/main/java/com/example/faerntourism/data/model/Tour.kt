@@ -1,7 +1,6 @@
-package com.example.faerntourism.models
+package com.example.faerntourism.data.model
 
 import androidx.compose.ui.graphics.painter.Painter
-import com.google.android.gms.maps.model.LatLng
 
 data class Tour (
     val id: Int,

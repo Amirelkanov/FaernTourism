@@ -11,30 +11,29 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.faerntourism.models.Place
-import com.example.faerntourism.places
+import com.example.faerntourism.data.places
 import com.example.faerntourism.ui.components.DetailedScreenWrapper
 import com.example.faerntourism.ui.components.Section
-import com.example.faerntourism.ui.theme.FaernTourismTheme
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlaceScreen(
-    place: Place,
+    placeId: String? = places().first().id.toString(),
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var selectedTabIndex by remember { mutableStateOf(0) } // Используем mutableStateOf для совместимости
+    val place = places()[placeId?.toInt()!!] // TODO: надо переделывать
+
+    var selectedTabIndex by remember { mutableIntStateOf(0) }
     val listState = rememberLazyListState()
 
     val titles = listOf("Информация", "Расположение")
@@ -50,9 +49,9 @@ fun PlaceScreen(
     }
 
     DetailedScreenWrapper(
-        place.name,
-        "500 м",
-        place.img,
+        mainCardTitle = place.name,
+        secondaryCardTitle = "500 м",
+        navigateBack = navigateBack,
         content = {
             Column(modifier) {
                 PrimaryTabRow(selectedTabIndex = selectedTabIndex) {
@@ -117,15 +116,6 @@ fun PlaceScreen(
                 }
             }
         },
-        navigateBack = navigateBack
+        painterCard = place.img,
     )
-}
-
-
-@Preview(showBackground = true, backgroundColor = 0xFFF5F0EE)
-@Composable
-fun PlaceScreenPreview() {
-    FaernTourismTheme {
-        PlaceScreen(places()[0], {})
-    }
 }
