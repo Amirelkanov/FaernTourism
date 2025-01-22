@@ -1,64 +1,66 @@
-package com.example.faerntourism.network
+package com.example.faerntourism.data
 
 import android.content.Context
 import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import com.example.faerntourism.R
-import com.example.faerntourism.data.model.UserData
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.tasks.await
-import kotlin.coroutines.cancellation.CancellationException
+import javax.inject.Inject
 
-class GoogleAuthUiService(
-    private val context: Context,
-    private val credentialManager: CredentialManager,
-) {
-    private val auth = Firebase.auth
+interface GoogleAuthRepository {
+    val currentUser: FirebaseUser?
+    suspend fun signIn(): Result<FirebaseUser>
+    suspend fun signOut(): Result<Unit>
+}
 
-    suspend fun signIn() {
+class GoogleAuthRepositoryImpl @Inject constructor(
+    private val firebaseAuth: FirebaseAuth,
+    @ApplicationContext private val context: Context,
+) : GoogleAuthRepository {
+    private val credentialManager: CredentialManager = CredentialManager.create(context)
+
+    override val currentUser: FirebaseUser? = firebaseAuth.currentUser
+
+    override suspend fun signIn(): Result<FirebaseUser> {
         val request: GetCredentialRequest = GetCredentialRequest.Builder()
             .addCredentialOption(buildGoogleIdOption())
             .build()
-        try {
+        return try {
             val credential =
                 credentialManager.getCredential(request = request, context = context).credential
             val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
             val googleIdToken = googleIdTokenCredential.idToken
             val firebaseCredential = GoogleAuthProvider.getCredential(googleIdToken, null)
 
-            auth.signInWithCredential(firebaseCredential).await()
+            val result = firebaseAuth.signInWithCredential(firebaseCredential).await()
+            Result.success(result.user!!)
         } catch (e: Exception) {
             e.printStackTrace()
-            if (e is CancellationException) throw e
+            Result.failure(e)
         }
     }
 
-    suspend fun signOut() {
-        try {
+    override suspend fun signOut(): Result<Unit> {
+        return try {
             credentialManager.clearCredentialState(ClearCredentialStateRequest())
-            auth.signOut()
+            firebaseAuth.signOut()
+            Result.success(Unit)
         } catch (e: Exception) {
             e.printStackTrace()
-            if (e is CancellationException) throw e
+            Result.failure(e)
         }
-    }
-
-    fun getSignedInUser(): UserData? = auth.currentUser?.run {
-        UserData(
-            userId = uid,
-            username = displayName,
-            profilePictureUrl = photoUrl?.toString()
-        )
     }
 
     private fun buildGoogleIdOption(): GetGoogleIdOption {
         return GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(false)
+            .setFilterByAuthorizedAccounts(true)
             .setServerClientId(context.getString(R.string.web_client_id))
             .build()
     }

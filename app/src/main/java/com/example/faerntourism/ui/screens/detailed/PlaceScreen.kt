@@ -1,4 +1,4 @@
-package com.example.faerntourism.screens.detailed
+package com.example.faerntourism.ui.screens.detailed
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues

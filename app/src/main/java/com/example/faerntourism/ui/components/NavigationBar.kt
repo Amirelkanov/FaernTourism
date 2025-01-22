@@ -30,9 +30,10 @@ fun FaernBottomNavigation(
         modifier = modifier,
     ) {
         allScreens.forEach { screen ->
+            val selected = currentScreen.route == screen.route
             NavigationBarItem(
-                selected = currentScreen.route == screen.route,
-                onClick = { onBottomTabSelected(screen) },
+                selected = selected,
+                onClick = { if (!selected) onBottomTabSelected(screen) },
                 colors = NavigationBarItemDefaults.colors(
                     indicatorColor = secondaryContainerLight,
                     selectedIconColor = onSurfaceLight,
@@ -48,7 +49,7 @@ fun FaernBottomNavigation(
                 },
                 icon = {
                     Icon(
-                        imageVector = if (currentScreen.route == screen.route) {
+                        imageVector = if (selected) {
                             screen.activeIcon
                         } else screen.inactiveIcon, contentDescription = null
                     )

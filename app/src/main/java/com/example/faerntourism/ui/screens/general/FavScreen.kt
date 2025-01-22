@@ -1,4 +1,4 @@
-package com.example.faerntourism.screens.general
+package com.example.faerntourism.ui.screens.general
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold

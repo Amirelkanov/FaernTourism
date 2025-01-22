@@ -4,35 +4,30 @@ package com.example.faerntourism
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.credentials.CredentialManager
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.faerntourism.network.GoogleAuthUiService
-import com.example.faerntourism.screens.detailed.ArticleScreen
-import com.example.faerntourism.screens.detailed.PlaceScreen
-import com.example.faerntourism.screens.general.AccountScreen
-import com.example.faerntourism.screens.general.CultureScreen
-import com.example.faerntourism.screens.general.FavScreen
-import com.example.faerntourism.screens.general.HomeScreen
-import com.example.faerntourism.screens.general.ToursScreen
+import com.example.faerntourism.ui.screens.detailed.ArticleScreen
+import com.example.faerntourism.ui.screens.detailed.PlaceScreen
+import com.example.faerntourism.ui.screens.general.AccountScreen
+import com.example.faerntourism.ui.screens.general.CultureScreen
+import com.example.faerntourism.ui.screens.general.HomeScreen
+import com.example.faerntourism.ui.screens.general.ToursScreen
+import com.example.faerntourism.ui.AuthViewModel
 import com.example.faerntourism.ui.theme.FaernTourismTheme
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class FaernActivity : ComponentActivity() {
 
-    private val googleAuthUiClient by lazy {
-        GoogleAuthUiService(
-            context = applicationContext,
-            credentialManager = CredentialManager.create(applicationContext)
-        )
-    }
+    private val authViewModel by viewModels<AuthViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +40,7 @@ class FaernActivity : ComponentActivity() {
                 ) {
                     val navController = rememberNavController()
 
-                    FaernNavHost(navController)
+                    FaernNavHost(navController, authViewModel)
                 }
             }
         }
@@ -55,7 +50,8 @@ class FaernActivity : ComponentActivity() {
 
 @Composable
 fun FaernNavHost(
-    navController: NavHostController
+    navController: NavHostController,
+    authViewModel: AuthViewModel
 ) {
     NavHost(navController = navController, startDestination = Home.route) {
         composable(route = Home.route) {
@@ -85,12 +81,17 @@ fun FaernNavHost(
                 }
             )
         }
-        composable(route = Account.route) { // TODO
-            AccountScreen()
+        composable(route = Account.route) {
+            AccountScreen(
+                onBottomTabSelected = { newScreen ->
+                    navController.navigateSingleTopTo(newScreen.route)
+                },
+                viewModel = authViewModel
+            )
         }
-        composable(route = Account.route) { // TODO
-            FavScreen()
-        }
+        /* composable(route = Account.route) { // TODO
+             FavScreen()
+         }*/
 
         composable(
             route = SinglePlace.routeWithArgs,
