@@ -1,6 +1,6 @@
 package com.example.faerntourism.data
 
-import android.util.Log
+import com.example.faerntourism.data.model.CultureArticle
 import com.example.faerntourism.data.model.Place
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObjects
@@ -10,6 +10,7 @@ import javax.inject.Inject
 
 interface FireStoreRepository {
     suspend fun getPlaces(): Result<List<Place>>
+    suspend fun getArticles(): Result<List<CultureArticle>>
 }
 
 class FireStoreRepositoryImpl @Inject constructor(
@@ -17,9 +18,19 @@ class FireStoreRepositoryImpl @Inject constructor(
 ) : FireStoreRepository {
     override suspend fun getPlaces(): Result<List<Place>> {
         return try {
-            val snapshot = fireStore.collection("places").get().await()
-            val places = snapshot.toObjects<Place>()
-            Result.success(places)
+            Result.success(
+                fireStore.collection("places").get().await().toObjects<Place>()
+            )
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getArticles(): Result<List<CultureArticle>> {
+        return try {
+            Result.success(
+                fireStore.collection("articles").get().await().toObjects<CultureArticle>()
+            )
         } catch (e: Exception) {
             Result.failure(e)
         }

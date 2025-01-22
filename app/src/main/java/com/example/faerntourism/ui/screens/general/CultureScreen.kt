@@ -15,55 +15,73 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.example.faerntourism.Culture
 import com.example.faerntourism.FaernDestination
-import com.example.faerntourism.data.cultureArticles
-import com.example.faerntourism.data.model.UserData
+import com.example.faerntourism.data.model.CultureArticle
 import com.example.faerntourism.ui.components.GeneralScreenWrapper
 import com.example.faerntourism.ui.components.MyListItem
 import com.example.faerntourism.ui.components.SearchBar
+import com.example.faerntourism.ui.screens.side.ErrorScreen
+import com.example.faerntourism.ui.screens.side.LoadingScreen
 
 @Composable
 fun CultureScreen(
     onBottomTabSelected: (FaernDestination) -> Unit,
     onArticleClick: (String) -> Unit,
+    articlesViewState: ArticlesViewState,
+    retryAction: () -> Unit,
     modifier: Modifier = Modifier,
-    userData: UserData? = null,
-    onSignInClick: () -> Unit = {},
-    onSignOut: () -> Unit = {},
 ) {
     GeneralScreenWrapper(
-        currentScreen = Culture,
-        onBottomTabSelected = onBottomTabSelected,
-        content = {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(20.dp),
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 15.dp)
-            ) {
+        currentScreen = Culture, onBottomTabSelected = onBottomTabSelected, content = {
+            when (articlesViewState) {
+                is ArticlesViewState.Success -> CultureArticlesFeedScreen(
+                    articlesViewState.articles, onArticleClick, modifier
+                )
 
-                val textState = remember {
-                    mutableStateOf(TextFieldValue(""))
-                }
+                is ArticlesViewState.Error -> ErrorScreen(
+                    retryAction, modifier = modifier.fillMaxSize()
+                )
 
-                SearchBar(state = textState)
-
-                val searchedText = textState.value.text
-
-                val cultureArticles = cultureArticles()
-                LazyColumn() {
-                    itemsIndexed(cultureArticles.filter {
-                        it.name.contains(searchedText, ignoreCase = true)
-                    }) { index, article ->
-                        MyListItem(
-                            article.name, article.description, 4, article.img,
-                            modifier = Modifier.clickable(
-                                // TODO: вместо индекса надо будет айдишник из бд пихать
-                                onClick = { onArticleClick(index.toString()) }
-                            )
-                        )
-                    }
-                }
+                else -> LoadingScreen(modifier = modifier.fillMaxSize())
             }
         }, modifier = Modifier.padding(horizontal = 10.dp)
     )
+}
+
+
+@Composable
+fun CultureArticlesFeedScreen(
+    articles: List<CultureArticle>, onArticleClick: (String) -> Unit, modifier: Modifier = Modifier
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(20.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 15.dp)
+    ) {
+
+        val textState = remember {
+            mutableStateOf(TextFieldValue(""))
+        }
+
+        SearchBar(state = textState)
+
+        val searchedText = textState.value.text
+
+        LazyColumn() {
+            itemsIndexed(articles.filter {
+                it.name.contains(searchedText, ignoreCase = true)
+            }) { index, article ->
+                MyListItem(
+                    article.name,
+                    article.description,
+                    4,
+                    null,
+
+                    modifier = Modifier.clickable(
+                        // TODO: вместо индекса надо будет айдишник из бд пихать
+                        onClick = { onArticleClick(index.toString()) })
+                )
+            }
+        }
+    }
 }

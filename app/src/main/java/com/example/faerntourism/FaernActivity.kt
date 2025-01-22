@@ -12,11 +12,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.faerntourism.ui.screens.general.ArticlesViewModel
 import com.example.faerntourism.ui.screens.detailed.ArticleScreen
 import com.example.faerntourism.ui.screens.detailed.PlaceScreen
 import com.example.faerntourism.ui.screens.general.AccountScreen
@@ -24,7 +24,7 @@ import com.example.faerntourism.ui.screens.general.CultureScreen
 import com.example.faerntourism.ui.screens.general.HomeScreen
 import com.example.faerntourism.ui.screens.general.ToursScreen
 import com.example.faerntourism.ui.AuthViewModel
-import com.example.faerntourism.ui.PlacesViewModel
+import com.example.faerntourism.ui.screens.general.PlacesViewModel
 import com.example.faerntourism.ui.theme.FaernTourismTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -79,13 +79,16 @@ fun FaernNavHost(
             )
         }
         composable(route = Culture.route) {
+            val articlesViewModel: ArticlesViewModel = hiltViewModel()
             CultureScreen(
                 onBottomTabSelected = { newScreen ->
                     navController.navigateSingleTopTo(newScreen.route)
                 },
                 onArticleClick = { articleId ->
                     navController.navigateToSingleArticle(articleId)
-                }
+                },
+                articlesViewState = articlesViewModel.articlesViewStateFlow.collectAsState().value,
+                retryAction = articlesViewModel::getArticlesData
             )
         }
         composable(route = Account.route) {

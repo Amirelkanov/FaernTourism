@@ -33,6 +33,6 @@ fun ArticleScreen(
                 }
             }
         },
-        painterCard = article.img,
+        painterCard = null,
     )
 }
