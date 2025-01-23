@@ -27,7 +27,7 @@ import com.example.faerntourism.Home
 import com.example.faerntourism.data.model.Place
 import com.example.faerntourism.ui.components.GeneralScreenWrapper
 import com.example.faerntourism.ui.components.ListItemAdditionalInfo
-import com.example.faerntourism.ui.components.MyListItem
+import com.example.faerntourism.ui.components.FaernListItem
 import com.example.faerntourism.ui.components.SearchBar
 import com.example.faerntourism.ui.screens.side.ErrorScreen
 import com.example.faerntourism.ui.screens.side.LoadingScreen
@@ -94,8 +94,11 @@ fun PlacesFeedScreen(
             items(places.filter {
                 it.name.contains(searchedText, ignoreCase = true)
             }) { place ->
-                MyListItem(
-                    place.name, place.description, 2, null,
+                FaernListItem(
+                    title = place.name,
+                    description = place.description,
+                    photoURL = place.imgLink,
+                    descriptionMaxLines = 2,
                     additionalInfo = {
                         ListItemAdditionalInfo(
                             icon = {

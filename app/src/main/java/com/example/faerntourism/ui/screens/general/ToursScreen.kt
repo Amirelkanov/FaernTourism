@@ -27,7 +27,7 @@ import com.example.faerntourism.data.model.UserData
 import com.example.faerntourism.data.tours
 import com.example.faerntourism.ui.components.GeneralScreenWrapper
 import com.example.faerntourism.ui.components.ListItemAdditionalInfo
-import com.example.faerntourism.ui.components.MyListItem
+import com.example.faerntourism.ui.components.FaernListItem
 import com.example.faerntourism.ui.components.SearchBar
 import com.example.faerntourism.ui.theme.AppTypography
 import com.example.faerntourism.ui.theme.FaernTourismTheme
@@ -71,8 +71,8 @@ fun ToursScreen(
                     items(tours.filter {
                         it.name.contains(searchedText, ignoreCase = true)
                     }) { tour ->
-                        MyListItem(
-                            tour.name, tour.description, 2, tour.img,
+                        FaernListItem(
+                            tour.name, tour.description, 2, "",
                             additionalInfo = {
                                 ListItemAdditionalInfo(
                                     icon = {

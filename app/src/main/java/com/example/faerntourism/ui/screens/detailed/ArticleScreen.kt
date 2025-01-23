@@ -60,6 +60,7 @@ fun SingleArticleInfo(
         mainCardTitle = article.name,
         secondaryCardTitle = "500 м",
         navigateBack = navigateBack,
+        photoURL = article.imgLink,
         content = {
             LazyColumn(contentPadding = PaddingValues(10.dp)) {
                 item {
@@ -69,6 +70,5 @@ fun SingleArticleInfo(
                 }
             }
         },
-        painterCard = null,
     )
 }

@@ -21,7 +21,7 @@ import com.example.faerntourism.Articles
 import com.example.faerntourism.FaernDestination
 import com.example.faerntourism.data.model.Article
 import com.example.faerntourism.ui.components.GeneralScreenWrapper
-import com.example.faerntourism.ui.components.MyListItem
+import com.example.faerntourism.ui.components.FaernListItem
 import com.example.faerntourism.ui.components.SearchBar
 import com.example.faerntourism.ui.screens.side.ErrorScreen
 import com.example.faerntourism.ui.screens.side.LoadingScreen
@@ -77,16 +77,15 @@ fun ArticlesFeedScreen(
 
         val searchedText = textState.value.text
 
-        LazyColumn() {
+        LazyColumn {
             items(articles.filter {
                 it.name.contains(searchedText, ignoreCase = true)
             }) { article ->
-                MyListItem(
+                FaernListItem(
                     article.name,
                     article.description,
                     4,
-                    null,
-
+                    article.imgLink,
                     modifier = Modifier.clickable(
                         onClick = { onArticleClick(article.id) })
                 )

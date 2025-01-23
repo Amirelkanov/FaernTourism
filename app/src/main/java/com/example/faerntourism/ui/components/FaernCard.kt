@@ -1,6 +1,5 @@
 package com.example.faerntourism.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,8 +19,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -29,6 +28,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.example.faerntourism.R
 import com.example.faerntourism.ui.theme.AppTypography
 import com.example.faerntourism.ui.theme.FaernTourismTheme
@@ -37,10 +39,10 @@ import com.example.faerntourism.ui.theme.primaryContainerLight
 
 
 @Composable
-fun MyCard(
-    mainTitle: String = "",
-    secondaryTitle: String = "",
-    painter: Painter? = null,
+fun FaernCard(
+    mainTitle: String,
+    secondaryTitle: String,
+    photoURL: String = "",
     navigateBack: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
@@ -51,12 +53,16 @@ fun MyCard(
             .fillMaxWidth()
     ) {
         Box {
-            Image(
-                painter = if (painter !== null) painter else ColorPainter(primaryContainerLight),
+            AsyncImage(
+                model = ImageRequest.Builder(context = LocalContext.current).data(photoURL)
+                    .crossfade(true).build(),
+                contentDescription = mainTitle,
                 contentScale = ContentScale.Crop,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize()
+                error = ColorPainter(primaryContainerLight),
+                placeholder = painterResource(R.drawable.loading_img),
+                modifier = Modifier.fillMaxSize(),
             )
+
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -70,7 +76,7 @@ fun MyCard(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     IconButton(
-                        onClick = {navigateBack()}
+                        onClick = { navigateBack() }
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -118,12 +124,11 @@ fun MyCard(
 
 @Preview(device = "spec:width=411dp,height=891dp", showSystemUi = true)
 @Composable
-fun MyCardPreview() {
+fun FaernCardPreview() {
     FaernTourismTheme {
-        MyCard(
+        FaernCard(
             "Лютеранская Кирха",
             "500 м",
-            painterResource(R.drawable.kurtarin_cave)
         )
     }
 }

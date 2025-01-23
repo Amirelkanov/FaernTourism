@@ -67,16 +67,16 @@ fun GeneralScreenWrapper(
 fun DetailedScreenWrapper(
     mainCardTitle: String,
     secondaryCardTitle: String,
+    photoURL: String = "",
     navigateBack: () -> Unit,
     content: @Composable () -> Unit,
-    painterCard: Painter? = null,
     modifier: Modifier = Modifier
 ) {
     Scaffold(topBar = {
-        MyCard(
+        FaernCard(
             mainCardTitle,
             secondaryCardTitle,
-            painterCard,
+            photoURL,
             navigateBack = navigateBack
         )
     }) { contentPadding ->

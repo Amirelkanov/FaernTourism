@@ -89,6 +89,7 @@ fun SinglePlaceInfo(
     DetailedScreenWrapper(
         mainCardTitle = place.name,
         secondaryCardTitle = "500 м",
+        photoURL = place.imgLink,
         navigateBack = navigateBack,
         content = {
             Column(modifier) {
@@ -153,7 +154,6 @@ fun SinglePlaceInfo(
                     }
                 }
             }
-        },
-        painterCard = null,
+        }
     )
 }
