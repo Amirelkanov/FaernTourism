@@ -9,11 +9,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -21,14 +23,16 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.faerntourism.FaernDestination
 import com.example.faerntourism.Tours
-import com.example.faerntourism.data.model.UserData
-import com.example.faerntourism.data.tours
+import com.example.faerntourism.data.model.Tour
+import com.example.faerntourism.ui.components.FaernListItem
 import com.example.faerntourism.ui.components.GeneralScreenWrapper
 import com.example.faerntourism.ui.components.ListItemAdditionalInfo
-import com.example.faerntourism.ui.components.FaernListItem
 import com.example.faerntourism.ui.components.SearchBar
+import com.example.faerntourism.ui.screens.side.ErrorScreen
+import com.example.faerntourism.ui.screens.side.LoadingScreen
 import com.example.faerntourism.ui.theme.AppTypography
 import com.example.faerntourism.ui.theme.FaernTourismTheme
 import com.example.faerntourism.ui.theme.secondaryLight
@@ -36,72 +40,90 @@ import com.example.faerntourism.ui.theme.secondaryLight
 @Composable
 fun ToursScreen(
     onBottomTabSelected: (FaernDestination) -> Unit,
-    modifier: Modifier = Modifier,
-    userData: UserData? = null,
-    onSignInClick: () -> Unit = {},
-    onSignOut: () -> Unit = {},
+    toursViewModel: ToursViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier
 ) {
+    LaunchedEffect(Unit) {
+        toursViewModel.getTours()
+    }
+
+    val toursViewState by toursViewModel.tourListStateFlow.collectAsState()
+
     GeneralScreenWrapper(
         currentScreen = Tours,
         onBottomTabSelected = onBottomTabSelected,
         content = {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(20.dp),
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 15.dp)
-            ) {
+            when (val state = toursViewState) {
+                is TourListViewState.Success -> ToursFeedScreen(
+                    state.tours,
+                    modifier
+                )
 
-                val textState = remember {
-                    mutableStateOf(TextFieldValue(""))
-                }
+                is TourListViewState.Error -> ErrorScreen(
+                    toursViewModel::getTours,
+                    modifier = modifier.fillMaxSize()
+                )
 
-                SearchBar(state = textState, trailingContent = {
-                    Icon(
-                        imageVector = Icons.Default.CalendarMonth,
-                        contentDescription = null,
-                    )
-                })
-
-                val uriHandler = LocalUriHandler.current
-                val searchedText = textState.value.text
-
-                val tours = tours()
-                LazyColumn {
-                    items(tours.filter {
-                        it.name.contains(searchedText, ignoreCase = true)
-                    }) { tour ->
-                        FaernListItem(
-                            tour.name, tour.description, 2, "",
-                            additionalInfo = {
-                                ListItemAdditionalInfo(
-                                    icon = {
-                                        Icon(
-                                            Icons.Default.CalendarToday,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(16.dp),
-                                            tint = secondaryLight
-                                        )
-                                    },
-                                    text = "от " + tour.startDate
-                                )
-                            },
-                            trailingContent = {
-                                Text(
-                                    "${tour.price}₽",
-                                    style = AppTypography.titleMedium,
-                                    maxLines = 1,
-                                    color = secondaryLight
-                                )
-                            },
-                            modifier.clickable(onClick = { uriHandler.openUri("https://www.google.com") })
-                        )
-                    }
-                }
+                else -> LoadingScreen(modifier = modifier.fillMaxSize())
             }
         },
         modifier = Modifier.padding(horizontal = 10.dp)
     )
+}
+
+@Composable
+fun ToursFeedScreen(
+    tours: List<Tour>,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(20.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 15.dp)
+    ) {
+
+        val textState = remember {
+            mutableStateOf(TextFieldValue(""))
+        }
+
+        SearchBar(state = textState)
+
+        val uriHandler = LocalUriHandler.current
+        val searchedText = textState.value.text
+
+        LazyColumn {
+            items(tours.filter {
+                it.name.contains(searchedText, ignoreCase = true)
+            }) { tour ->
+                FaernListItem(
+                    tour.name, tour.description, 2, tour.imgLink,
+                    additionalInfo = {
+                        ListItemAdditionalInfo(
+                            icon = {
+                                Icon(
+                                    Icons.Default.CalendarToday,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp),
+                                    tint = secondaryLight
+                                )
+                            },
+                            text = "от " + tour.date
+                        )
+                    },
+                    trailingContent = {
+                        Text(
+                            "${tour.price}₽",
+                            style = AppTypography.titleMedium,
+                            maxLines = 1,
+                            color = secondaryLight
+                        )
+                    },
+                    modifier.clickable(onClick = { uriHandler.openUri(tour.link) })
+                )
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFF5F0EE)

@@ -74,6 +74,10 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
 
+    implementation(libs.jsoup.jsoup)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.cio)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

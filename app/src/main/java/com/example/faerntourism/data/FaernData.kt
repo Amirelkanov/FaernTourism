@@ -55,68 +55,45 @@ fun places() = listOf(
 @Composable
 fun tours() = listOf(
     Tour(
-        1,
-        painterResource(R.drawable.kurtarin_cave),
-        "Куртатинское ущелье",
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed",
-        "28.11.2024",
-        1500,
-        "google.com"
+        name = "Beauty of the Mountains",
+        price = "53,400 руб.",
+        date = "24 January 2025",
+        link = "https://trip-kavkaz.com/tour/1",
+        imgLink = "https://trip-kavkaz.com/images/tour1.jpg",
+        description = "Explore the majestic mountains and rich cultural heritage of the Caucasus in this immersive 8-day tour."
     ),
     Tour(
-        2,
-        painterResource(R.drawable.kurtarin_cave),
-        "Куртатинское ущелье",
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed",
-        "28.11.2024",
-        1500,
-        "google.com"
+        name = "Cultural Wonders of the Caucasus",
+        price = "45,200 руб.",
+        date = "15 February 2025",
+        link = "https://trip-kavkaz.com/tour/2",
+        imgLink = "https://trip-kavkaz.com/images/tour2.jpg",
+        description = "Discover the unique traditions and stunning landscapes of Dagestan and Ingushetia in this guided tour."
     ),
     Tour(
-        3,
-        painterResource(R.drawable.kurtarin_cave),
-        "Куртатинское ущелье",
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed",
-        "28.11.2024",
-        1500,
-        "google.com"
+        name = "Historical Landmarks and Nature",
+        price = "62,000 руб.",
+        date = "10 March 2025",
+        link = "https://trip-kavkaz.com/tour/3",
+        imgLink = "https://trip-kavkaz.com/images/tour3.jpg",
+        description = "A perfect blend of history and nature, this tour takes you to ancient sites and breathtaking canyons."
     ),
     Tour(
-        4,
-        painterResource(R.drawable.kurtarin_cave),
-        "Куртатинское ущелье",
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed",
-        "28.11.2024",
-        1500,
-        "google.com"
+        name = "The Charm of North Ossetia",
+        price = "39,800 руб.",
+        date = "5 April 2025",
+        link = "https://trip-kavkaz.com/tour/4",
+        imgLink = "https://trip-kavkaz.com/images/tour4.jpg",
+        description = "Experience the charm of North Ossetia with its scenic landscapes, cultural richness, and traditional cuisine."
     ),
     Tour(
-        5,
-        painterResource(R.drawable.kurtarin_cave),
-        "Куртатинское ущелье",
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed",
-        "28.11.2024",
-        1500,
-        "google.com"
-    ),
-    Tour(
-        6,
-        painterResource(R.drawable.kurtarin_cave),
-        "Куртатинское ущелье",
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed",
-        "28.11.2024",
-        1500,
-        "google.com"
-    ),
-    Tour(
-        7,
-        painterResource(R.drawable.kurtarin_cave),
-        "Куртатинское ущелье",
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed",
-        "28.11.2024",
-        1500,
-        "google.com"
-    ),
+        name = "Caucasus Highlights",
+        price = "50,000 руб.",
+        date = "20 May 2025",
+        link = "https://trip-kavkaz.com/tour/5",
+        imgLink = "https://trip-kavkaz.com/images/tour5.jpg",
+        description = "From the peaks of Elbrus to the historical sites of Derbent, this tour showcases the best of the Caucasus."
+    )
 )
 
 @Composable
