@@ -24,7 +24,6 @@ import com.example.faerntourism.ui.screens.general.ArticlesScreen
 import com.example.faerntourism.ui.screens.general.HomeScreen
 import com.example.faerntourism.ui.screens.general.ToursScreen
 import com.example.faerntourism.ui.AuthViewModel
-import com.example.faerntourism.ui.screens.general.PlacesViewModel
 import com.example.faerntourism.ui.theme.FaernTourismTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -59,7 +58,6 @@ fun FaernNavHost(
 ) {
     NavHost(navController = navController, startDestination = Home.route) {
         composable(route = Home.route) {
-            val placesViewModel: PlacesViewModel = hiltViewModel()
             HomeScreen(
                 onBottomTabSelected = { newScreen ->
                     navController.navigateSingleTopTo(newScreen.route)
@@ -67,8 +65,6 @@ fun FaernNavHost(
                 onPlaceClick = { placeId ->
                     navController.navigateToSinglePlace(placeId)
                 },
-                placesViewState = placesViewModel.placesViewStateFlow.collectAsState().value,
-                retryAction = placesViewModel::getPlacesData
             )
         }
         composable(route = Tours.route) {
@@ -79,16 +75,13 @@ fun FaernNavHost(
             )
         }
         composable(route = Articles.route) {
-            val articlesViewModel: ArticlesViewModel = hiltViewModel()
             ArticlesScreen(
                 onBottomTabSelected = { newScreen ->
                     navController.navigateSingleTopTo(newScreen.route)
                 },
                 onArticleClick = { articleId ->
                     navController.navigateToSingleArticle(articleId)
-                },
-                articlesViewState = articlesViewModel.articlesViewStateFlow.collectAsState().value,
-                retryAction = articlesViewModel::getArticlesData
+                }
             )
         }
         composable(route = Account.route) {
@@ -99,7 +92,7 @@ fun FaernNavHost(
                 viewModel = authViewModel
             )
         }
-        /* composable(route = Account.route) { // TODO
+        /* composable(route = Favourite.route) { // TODO
              FavScreen()
          }*/
 
@@ -108,10 +101,12 @@ fun FaernNavHost(
             arguments = SinglePlace.arguments
         ) { navBackStackEntry ->
             val placeId = navBackStackEntry.arguments?.getString(SinglePlace.PLACE_ID_ARG)
-            PlaceScreen(
-                placeId = placeId,
-                navigateBack = { navController.popBackStack() }
-            )
+            if (placeId != null) {
+                PlaceScreen(
+                    placeId = placeId,
+                    navigateBack = { navController.popBackStack() }
+                )
+            }
         }
 
         composable(
@@ -119,10 +114,12 @@ fun FaernNavHost(
             arguments = SingleArticle.arguments
         ) { navBackStackEntry ->
             val articleId = navBackStackEntry.arguments?.getString(SingleArticle.ARTICLE_ID_ARG)
-            ArticleScreen(
-                articleId = articleId, // TODO: очев заглукша
-                navigateBack = { navController.popBackStack() }
-            )
+            if (articleId != null) {
+                ArticleScreen(
+                    articleId = articleId,
+                    navigateBack = { navController.popBackStack() }
+                )
+            }
         }
     }
 }

@@ -1,25 +1,61 @@
 package com.example.faerntourism.ui.screens.detailed
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.faerntourism.data.articles
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.faerntourism.data.model.Article
 import com.example.faerntourism.ui.components.DetailedScreenWrapper
+import com.example.faerntourism.ui.screens.general.ArticleViewState
+import com.example.faerntourism.ui.screens.general.ArticlesViewModel
+import com.example.faerntourism.ui.screens.side.ErrorScreen
+import com.example.faerntourism.ui.screens.side.LoadingScreen
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArticleScreen(
-    articleId: String? = articles().first().id.toString(),
+    articleId: String,
     navigateBack: () -> Unit,
+    articlesViewModel: ArticlesViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
 ) {
-    val article = articles()[articleId?.toInt()!!] // TODO: надо переделывать
+    LaunchedEffect(Unit) {
+        articlesViewModel.getArticle(articleId)
+    }
+
+    val articleViewState by articlesViewModel.articleViewStateFlow.collectAsState()
 
 
+    when (val state = articleViewState) {
+        is ArticleViewState.Success -> SingleArticleInfo(
+            state.article,
+            navigateBack,
+            modifier
+        )
+
+        is ArticleViewState.Error -> {
+            ErrorScreen(
+                retryAction = { articlesViewModel.getArticle(articleId) },
+                modifier = modifier.fillMaxSize()
+            )
+        }
+
+        else -> LoadingScreen(modifier = modifier.fillMaxSize())
+    }
+}
+
+@Composable
+fun SingleArticleInfo(
+    article: Article,
+    navigateBack: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     DetailedScreenWrapper(
         mainCardTitle = article.name,
         secondaryCardTitle = "500 м",

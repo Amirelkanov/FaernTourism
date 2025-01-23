@@ -2,6 +2,7 @@ package com.example.faerntourism.ui.screens.detailed
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -10,6 +11,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -19,19 +21,55 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.faerntourism.data.places
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.faerntourism.data.model.Place
 import com.example.faerntourism.ui.components.DetailedScreenWrapper
 import com.example.faerntourism.ui.components.Section
+import com.example.faerntourism.ui.screens.general.PlaceViewState
+import com.example.faerntourism.ui.screens.general.PlacesViewModel
+import com.example.faerntourism.ui.screens.side.ErrorScreen
+import com.example.faerntourism.ui.screens.side.LoadingScreen
 import kotlinx.coroutines.launch
+
+@Composable
+fun PlaceScreen(
+    placeId: String,
+    navigateBack: () -> Unit,
+    placesViewModel: PlacesViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier,
+) {
+    LaunchedEffect(Unit) {
+        placesViewModel.getPlace(placeId)
+    }
+
+    val placeViewState by placesViewModel.placeViewStateFlow.collectAsState()
+
+    when (val state = placeViewState) {
+        is PlaceViewState.Success -> SinglePlaceInfo(
+            state.place,
+            navigateBack,
+            modifier
+        )
+
+        is PlaceViewState.Error -> {
+            ErrorScreen(
+                retryAction = { placesViewModel.getPlace(placeId) },
+                modifier = modifier.fillMaxSize()
+            )
+        }
+
+        else -> LoadingScreen(modifier = modifier.fillMaxSize())
+    }
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlaceScreen(
-    placeId: String? = places().first().id.toString(),
+fun SinglePlaceInfo(
+    place: Place,
     navigateBack: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
-    val place = places()[placeId?.toInt()!!] // TODO: надо переделывать
 
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     val listState = rememberLazyListState()

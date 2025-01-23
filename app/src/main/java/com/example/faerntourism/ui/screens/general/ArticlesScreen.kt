@@ -6,13 +6,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.faerntourism.Articles
 import com.example.faerntourism.FaernDestination
 import com.example.faerntourism.data.model.Article
@@ -26,19 +30,25 @@ import com.example.faerntourism.ui.screens.side.LoadingScreen
 fun ArticlesScreen(
     onBottomTabSelected: (FaernDestination) -> Unit,
     onArticleClick: (String) -> Unit,
-    articlesViewState: ArticlesViewState,
-    retryAction: () -> Unit,
+    articlesViewModel: ArticlesViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
 ) {
+    LaunchedEffect(Unit) {
+        articlesViewModel.getArticlesData()
+    }
+
+    val placesViewState by articlesViewModel.articleListViewStateFlow.collectAsState()
+
+
     GeneralScreenWrapper(
         currentScreen = Articles, onBottomTabSelected = onBottomTabSelected, content = {
-            when (articlesViewState) {
-                is ArticlesViewState.Success -> ArticlesFeedScreen(
-                    articlesViewState.articles, onArticleClick, modifier
+            when (val state = placesViewState) {
+                is ArticleListViewState.Success -> ArticlesFeedScreen(
+                    state.articles, onArticleClick, modifier
                 )
 
-                is ArticlesViewState.Error -> ErrorScreen(
-                    retryAction, modifier = modifier.fillMaxSize()
+                is ArticleListViewState.Error -> ErrorScreen(
+                    articlesViewModel::getArticlesData, modifier = modifier.fillMaxSize()
                 )
 
                 else -> LoadingScreen(modifier = modifier.fillMaxSize())
@@ -68,9 +78,9 @@ fun ArticlesFeedScreen(
         val searchedText = textState.value.text
 
         LazyColumn() {
-            itemsIndexed(articles.filter {
+            items(articles.filter {
                 it.name.contains(searchedText, ignoreCase = true)
-            }) { index, article ->
+            }) { article ->
                 MyListItem(
                     article.name,
                     article.description,
@@ -78,8 +88,7 @@ fun ArticlesFeedScreen(
                     null,
 
                     modifier = Modifier.clickable(
-                        // TODO: вместо индекса надо будет айдишник из бд пихать
-                        onClick = { onArticleClick(index.toString()) })
+                        onClick = { onArticleClick(article.id) })
                 )
             }
         }

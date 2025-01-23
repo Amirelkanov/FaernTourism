@@ -8,16 +8,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.faerntourism.FaernDestination
 import com.example.faerntourism.Home
 import com.example.faerntourism.data.model.Place
@@ -33,24 +37,29 @@ import com.example.faerntourism.ui.theme.secondaryLight
 fun HomeScreen(
     onBottomTabSelected: (FaernDestination) -> Unit,
     onPlaceClick: (String) -> Unit,
-    placesViewState: PlacesViewState,
-    retryAction: () -> Unit,
+    placesViewModel: PlacesViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
 ) {
+
+    LaunchedEffect(Unit) {
+        placesViewModel.getPlacesData()
+    }
+
+    val placesViewState by placesViewModel.placeListViewStateFlow.collectAsState()
 
     GeneralScreenWrapper(
         currentScreen = Home,
         onBottomTabSelected = onBottomTabSelected,
         content = {
-            when (placesViewState) {
-                is PlacesViewState.Success -> PlacesFeedScreen(
-                    placesViewState.places,
+            when (val state = placesViewState) {
+                is PlaceListViewState.Success -> PlacesFeedScreen(
+                    state.places,
                     onPlaceClick,
                     modifier
                 )
 
-                is PlacesViewState.Error -> ErrorScreen(
-                    retryAction,
+                is PlaceListViewState.Error -> ErrorScreen(
+                    placesViewModel::getPlacesData,
                     modifier = modifier.fillMaxSize()
                 )
 
@@ -82,9 +91,9 @@ fun PlacesFeedScreen(
         val searchedText = textState.value.text
 
         LazyColumn {
-            itemsIndexed(places.filter {
+            items(places.filter {
                 it.name.contains(searchedText, ignoreCase = true)
-            }) { index, place ->
+            }) { place ->
                 MyListItem(
                     place.name, place.description, 2, null,
                     additionalInfo = {
@@ -101,7 +110,7 @@ fun PlacesFeedScreen(
                         )
                     },
                     modifier = Modifier.clickable(
-                        onClick = { onPlaceClick(index.toString()) }
+                        onClick = { onPlaceClick(place.id) }
                     )
                 )
             }

@@ -16,7 +16,7 @@ import com.example.faerntourism.R
 
 @Composable
 fun ErrorScreen(
-    retryAction: () -> Unit,
+    retryAction: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Column(

@@ -12,35 +12,54 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-sealed interface ArticlesViewState {
-    data class Success(val articles: List<Article>) : ArticlesViewState
-    data class Error(val errorMsg: String) : ArticlesViewState
-    data object Loading : ArticlesViewState
+sealed interface ArticleListViewState {
+    data class Success(val articles: List<Article>) : ArticleListViewState
+    data class Error(val errorMsg: String) : ArticleListViewState
+    data object Loading : ArticleListViewState
+}
+
+sealed interface ArticleViewState {
+    data class Success(val article: Article) : ArticleViewState
+    data class Error(val errorMsg: String) : ArticleViewState
+    data object Loading : ArticleViewState
 }
 
 @HiltViewModel
 class ArticlesViewModel @Inject constructor(
     private val fireStoreRepository: FireStoreRepository
 ) : ViewModel() {
-    private val _internalArticlesViewStateFlow =
-        MutableStateFlow<ArticlesViewState>(ArticlesViewState.Loading)
-    val articlesViewStateFlow = _internalArticlesViewStateFlow.asStateFlow()
+    private val _internalArticleListViewStateFlow =
+        MutableStateFlow<ArticleListViewState>(ArticleListViewState.Loading)
+    val articleListViewStateFlow = _internalArticleListViewStateFlow.asStateFlow()
 
-    init {
-        getArticlesData()
-    }
+    private val _internalArticleViewStateFlow =
+        MutableStateFlow<ArticleViewState>(ArticleViewState.Loading)
+    val articleViewStateFlow = _internalArticleViewStateFlow.asStateFlow()
 
     fun getArticlesData() {
         viewModelScope.launch {
-            _internalArticlesViewStateFlow.update { return@update ArticlesViewState.Loading }
+            _internalArticleListViewStateFlow.update { return@update ArticleListViewState.Loading }
             fireStoreRepository.getArticles().onSuccess { articles ->
-                _internalArticlesViewStateFlow.update {
-                    return@update ArticlesViewState.Success(articles)
+                _internalArticleListViewStateFlow.update {
+                    return@update ArticleListViewState.Success(articles)
                 }
             }.onFailure { e ->
-                _internalArticlesViewStateFlow.update {
-                    return@update ArticlesViewState.Error(e.message ?: "Unknown error occurred.")
+                _internalArticleListViewStateFlow.update {
+                    return@update ArticleListViewState.Error(e.message ?: "Unknown error occurred.")
                 }
+            }
+        }
+    }
+
+    fun getArticle(id: String) = viewModelScope.launch {
+        _internalArticleViewStateFlow.update { return@update ArticleViewState.Loading }
+        fireStoreRepository.getArticle(id).onSuccess { article ->
+            _internalArticleViewStateFlow.update {
+                return@update ArticleViewState.Success(article)
+            }
+        }.onFailure { e ->
+            _internalArticleViewStateFlow.update {
+                return@update ArticleViewState.Error(e.message ?: "Unknown error occurred.")
             }
         }
     }

@@ -11,35 +11,55 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-sealed interface PlacesViewState {
-    data class Success(val places: List<Place>) : PlacesViewState
-    data class Error(val errorMsg: String) : PlacesViewState
-    data object Loading : PlacesViewState
+sealed interface PlaceListViewState {
+    data class Success(val places: List<Place>) : PlaceListViewState
+    data class Error(val errorMsg: String) : PlaceListViewState
+    data object Loading : PlaceListViewState
 }
+
+sealed interface PlaceViewState {
+    data class Success(val place: Place) : PlaceViewState
+    data class Error(val errorMsg: String) : PlaceViewState
+    data object Loading : PlaceViewState
+}
+
 
 @HiltViewModel
 class PlacesViewModel @Inject constructor(
     private val fireStoreRepository: FireStoreRepository
 ) : ViewModel() {
-    private val _internalPlacesViewStateFlow =
-        MutableStateFlow<PlacesViewState>(PlacesViewState.Loading)
-    val placesViewStateFlow = _internalPlacesViewStateFlow.asStateFlow()
+    private val _internalPlaceListViewStateFlow =
+        MutableStateFlow<PlaceListViewState>(PlaceListViewState.Loading)
+    val placeListViewStateFlow = _internalPlaceListViewStateFlow.asStateFlow()
 
-    init {
-        getPlacesData()
-    }
+    private val _internalPlaceViewStateFlow =
+        MutableStateFlow<PlaceViewState>(PlaceViewState.Loading)
+    val placeViewStateFlow = _internalPlaceViewStateFlow.asStateFlow()
 
     fun getPlacesData() {
         viewModelScope.launch {
-            _internalPlacesViewStateFlow.update { return@update PlacesViewState.Loading }
+            _internalPlaceListViewStateFlow.update { return@update PlaceListViewState.Loading }
             fireStoreRepository.getPlaces().onSuccess { places ->
-                _internalPlacesViewStateFlow.update {
-                    return@update PlacesViewState.Success(places)
+                _internalPlaceListViewStateFlow.update {
+                    return@update PlaceListViewState.Success(places)
                 }
             }.onFailure { e ->
-                _internalPlacesViewStateFlow.update {
-                    return@update PlacesViewState.Error(e.message ?: "Unknown error occurred.")
+                _internalPlaceListViewStateFlow.update {
+                    return@update PlaceListViewState.Error(e.message ?: "Unknown error occurred.")
                 }
+            }
+        }
+    }
+
+    fun getPlace(id: String) = viewModelScope.launch {
+        _internalPlaceViewStateFlow.update { return@update PlaceViewState.Loading }
+        fireStoreRepository.getPlace(id).onSuccess { place ->
+            _internalPlaceViewStateFlow.update {
+                return@update PlaceViewState.Success(place)
+            }
+        }.onFailure { e ->
+            _internalPlaceViewStateFlow.update {
+                return@update PlaceViewState.Error(e.message ?: "Unknown error occurred.")
             }
         }
     }
