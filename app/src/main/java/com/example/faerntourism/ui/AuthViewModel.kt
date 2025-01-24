@@ -34,15 +34,13 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun loginUser() = viewModelScope.launch {
-        val result = repository.signIn()
+    fun signIn(googleIdToken: String) = viewModelScope.launch {
+        val result = repository.signInWithToken(googleIdToken)
         _loginFlow.value = result
     }
 
-    fun logout() {
-        viewModelScope.launch {
-            repository.signOut()
-            _loginFlow.value = null
-        }
+    fun signOut(clearCredentialState: suspend () -> Unit) = viewModelScope.launch {
+        repository.signOut(clearCredentialState)
+        _loginFlow.value = null
     }
 }
