@@ -6,15 +6,15 @@ import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-interface GoogleAuthRepository {
+interface FirebaseAuthRepository {
     val currentUser: FirebaseUser?
     suspend fun signInWithToken(googleIdToken: String): Result<FirebaseUser>
     suspend fun signOut(clearCredentialState: suspend () -> Unit): Result<Unit>
 }
 
-class GoogleAuthRepositoryImpl @Inject constructor(
+class FirebaseAuthRepositoryImpl @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
-) : GoogleAuthRepository {
+) : FirebaseAuthRepository {
     override val currentUser: FirebaseUser? = firebaseAuth.currentUser
 
     override suspend fun signInWithToken(googleIdToken: String): Result<FirebaseUser> {
