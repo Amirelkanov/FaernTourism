@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,10 +33,6 @@ import coil3.request.crossfade
 import com.example.faerntourism.R
 import com.example.faerntourism.ui.theme.AppTypography
 import com.example.faerntourism.ui.theme.FaernTourismTheme
-import com.example.faerntourism.ui.theme.backgroundLight
-import com.example.faerntourism.ui.theme.onSurfaceLight
-import com.example.faerntourism.ui.theme.primaryContainerLight
-import com.example.faerntourism.ui.theme.secondaryLight
 
 // TODO: favourite
 @Composable
@@ -49,7 +46,7 @@ fun FaernListItem(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        color = backgroundLight,
+        color = colorScheme.background,
         modifier = modifier
     ) {
         Row(
@@ -64,7 +61,7 @@ fun FaernListItem(
                     .crossfade(true).build(),
                 contentDescription = title,
                 contentScale = ContentScale.Crop,
-                error = ColorPainter(primaryContainerLight),
+                error = ColorPainter(colorScheme.primaryContainer),
                 placeholder = painterResource(R.drawable.loading_img),
                 modifier = Modifier
                     .size(80.dp)
@@ -86,11 +83,11 @@ fun FaernListItem(
                     Text(
                         title,
                         fontSize = 18.sp, fontWeight = FontWeight.Medium, maxLines = 1,
-                        color = onSurfaceLight, overflow = TextOverflow.Ellipsis,
+                        color = colorScheme.onSurface, overflow = TextOverflow.Ellipsis,
                     )
                     Text(
                         description,
-                        style = AppTypography.bodySmall, color = secondaryLight,
+                        style = AppTypography.bodySmall, color = colorScheme.secondary,
                         maxLines = descriptionMaxLines, overflow = TextOverflow.Ellipsis
                     )
                     additionalInfo?.invoke()
@@ -116,7 +113,7 @@ fun TourListItemPreview() {
                             Icons.Default.CalendarToday,
                             contentDescription = null,
                             modifier = Modifier.size(16.dp),
-                            tint = secondaryLight
+                            tint = colorScheme.secondary
                         )
                     },
                     text = "от 28.11.2024"
@@ -127,7 +124,7 @@ fun TourListItemPreview() {
                     "1500₽",
                     style = AppTypography.titleMedium,
                     maxLines = 1,
-                    color = secondaryLight
+                    color = colorScheme.secondary
                 )
             },
             descriptionMaxLines = 2,
@@ -151,7 +148,7 @@ fun PlaceListItemPreview() {
                             Icons.Default.LocationOn,
                             contentDescription = null,
                             modifier = Modifier.size(16.dp),
-                            tint = secondaryLight
+                            tint = colorScheme.secondary
                         )
                     },
                     text = "50 м от вас"
@@ -189,7 +186,7 @@ fun ListItemAdditionalInfo(
         Text(
             text,
             style = AppTypography.labelMedium,
-            color = secondaryLight,
+            color = colorScheme.secondary,
             maxLines = 1
         )
     }

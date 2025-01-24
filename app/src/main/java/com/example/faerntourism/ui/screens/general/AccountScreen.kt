@@ -17,7 +17,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -44,7 +45,6 @@ import com.example.faerntourism.ui.AuthViewModel
 import com.example.faerntourism.ui.AuthViewModel.Companion.toUserData
 import com.example.faerntourism.ui.components.GeneralScreenWrapper
 import com.example.faerntourism.ui.theme.FaernTourismTheme
-import com.example.faerntourism.ui.theme.onErrorContainerLight
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.launch
@@ -109,13 +109,6 @@ fun AccountScreen(
     }
 }
 
-private fun buildGoogleIdOption(context: Context): GetGoogleIdOption {
-    return GetGoogleIdOption.Builder()
-        .setFilterByAuthorizedAccounts(true)
-        .setServerClientId(context.getString(R.string.web_client_id))
-        .build()
-}
-
 
 @Composable
 fun LoggedUserScreen(
@@ -164,14 +157,14 @@ fun LoggedUserScreen(
                 Row {
                     Icon(
                         imageVector = Icons.AutoMirrored.Outlined.Logout,
-                        tint = onErrorContainerLight,
+                        tint = colorScheme.onErrorContainer,
                         contentDescription = null
                     )
                     Text("Выйти")
                 }
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowRight,
-                    tint = onErrorContainerLight,
+                    tint = colorScheme.onErrorContainer,
                     contentDescription = null
                 )
             }
@@ -192,10 +185,17 @@ fun NotLoggedUserScreen(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Вы не авторизованы.", style = MaterialTheme.typography.bodyLarge)
+        Text(text = "Вы не авторизованы.", style = typography.bodyLarge)
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = onLoginClick) {
             Text(text = "Войти")
         }
     }
+}
+
+private fun buildGoogleIdOption(context: Context): GetGoogleIdOption {
+    return GetGoogleIdOption.Builder()
+        .setFilterByAuthorizedAccounts(true)
+        .setServerClientId(context.getString(R.string.web_client_id))
+        .build()
 }

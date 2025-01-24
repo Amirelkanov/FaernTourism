@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,7 +36,6 @@ import com.example.faerntourism.ui.screens.side.ErrorScreen
 import com.example.faerntourism.ui.screens.side.LoadingScreen
 import com.example.faerntourism.ui.theme.AppTypography
 import com.example.faerntourism.ui.theme.FaernTourismTheme
-import com.example.faerntourism.ui.theme.secondaryLight
 
 @Composable
 fun ToursScreen(
@@ -105,7 +105,7 @@ fun ToursFeedScreen(
                                     Icons.Default.CalendarToday,
                                     contentDescription = null,
                                     modifier = Modifier.size(16.dp),
-                                    tint = secondaryLight
+                                    tint = colorScheme.secondary
                                 )
                             },
                             text = "от " + tour.date
@@ -116,7 +116,7 @@ fun ToursFeedScreen(
                             text = tour.price,
                             style = AppTypography.titleSmall,
                             maxLines = 1,
-                            color = secondaryLight,
+                            color = colorScheme.secondary,
                         )
                     },
                     modifier.clickable(onClick = { uriHandler.openUri(tour.link) })

@@ -2,12 +2,12 @@ package com.example.faerntourism.ui.components
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -20,11 +20,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.faerntourism.R
 import com.example.faerntourism.ui.theme.FaernTourismTheme
-import com.example.faerntourism.ui.theme.surfaceContainerHighLight
 
 @Composable
 fun SearchBar(
@@ -56,8 +54,8 @@ fun SearchBar(
         },
         shape = MaterialTheme.shapes.extraLarge,
         colors = TextFieldDefaults.colors(
-            unfocusedContainerColor = surfaceContainerHighLight,
-            focusedContainerColor = surfaceContainerHighLight,
+            unfocusedContainerColor = colorScheme.surfaceContainerHigh,
+            focusedContainerColor = colorScheme.surfaceContainerHigh,
 
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,

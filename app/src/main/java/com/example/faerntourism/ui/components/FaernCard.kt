@@ -13,6 +13,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,8 +35,6 @@ import coil3.request.crossfade
 import com.example.faerntourism.R
 import com.example.faerntourism.ui.theme.AppTypography
 import com.example.faerntourism.ui.theme.FaernTourismTheme
-import com.example.faerntourism.ui.theme.backgroundLight
-import com.example.faerntourism.ui.theme.primaryContainerLight
 
 
 @Composable
@@ -47,7 +46,7 @@ fun FaernCard(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        color = backgroundLight,
+        color = colorScheme.background,
         modifier = modifier
             .fillMaxHeight(0.3f)
             .fillMaxWidth()
@@ -58,7 +57,7 @@ fun FaernCard(
                     .crossfade(true).build(),
                 contentDescription = mainTitle,
                 contentScale = ContentScale.Crop,
-                error = ColorPainter(primaryContainerLight),
+                error = ColorPainter(colorScheme.primaryContainer),
                 placeholder = painterResource(R.drawable.loading_img),
                 modifier = Modifier.fillMaxSize(),
             )

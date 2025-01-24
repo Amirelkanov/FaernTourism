@@ -8,19 +8,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.faerntourism.FaernDestination
 import com.example.faerntourism.faernBottomNavigationBarScreens
-import com.example.faerntourism.ui.theme.backgroundLight
-import com.example.faerntourism.ui.theme.onSurfaceLight
 
 
 @Composable
@@ -37,7 +35,7 @@ fun GeneralScreenWrapper(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(0.1f)
-                    .background(color = backgroundLight)
+                    .background(color = colorScheme.background)
             ) {
                 Text(
                     currentScreen.topAppBarTitle,
@@ -54,7 +52,7 @@ fun GeneralScreenWrapper(
                 onBottomTabSelected = onBottomTabSelected
             )
         },
-        containerColor = backgroundLight
+        containerColor = colorScheme.background
     ) { contentPadding ->
         Box(modifier = Modifier.padding(contentPadding)) {
             content()
@@ -99,7 +97,12 @@ fun Section(
         modifier = modifier
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(title, fontSize = 32.sp, fontWeight = FontWeight.Medium, color = onSurfaceLight)
+            Text(
+                title,
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Medium,
+                color = colorScheme.onSurface
+            )
             actionButton?.invoke()
         }
         information()

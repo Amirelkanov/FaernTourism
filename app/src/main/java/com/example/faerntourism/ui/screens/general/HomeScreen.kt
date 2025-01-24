@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -25,13 +26,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.faerntourism.FaernDestination
 import com.example.faerntourism.Home
 import com.example.faerntourism.data.model.Place
+import com.example.faerntourism.ui.components.FaernListItem
 import com.example.faerntourism.ui.components.GeneralScreenWrapper
 import com.example.faerntourism.ui.components.ListItemAdditionalInfo
-import com.example.faerntourism.ui.components.FaernListItem
 import com.example.faerntourism.ui.components.SearchBar
 import com.example.faerntourism.ui.screens.side.ErrorScreen
 import com.example.faerntourism.ui.screens.side.LoadingScreen
-import com.example.faerntourism.ui.theme.secondaryLight
 
 @Composable
 fun HomeScreen(
@@ -106,7 +106,7 @@ fun PlacesFeedScreen(
                                     Icons.Default.LocationOn,
                                     contentDescription = null,
                                     modifier = Modifier.size(16.dp),
-                                    tint = secondaryLight
+                                    tint = colorScheme.secondary
                                 )
                             },
                             text = "50 м от вас"

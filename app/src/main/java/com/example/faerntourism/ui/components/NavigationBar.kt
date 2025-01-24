@@ -2,6 +2,7 @@ package com.example.faerntourism.ui.components
 
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -11,10 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.faerntourism.FaernDestination
-import com.example.faerntourism.ui.theme.onPrimaryContainerLight
-import com.example.faerntourism.ui.theme.onSurfaceLight
-import com.example.faerntourism.ui.theme.secondaryContainerLight
-import com.example.faerntourism.ui.theme.surfaceContainerLight
 
 
 @Composable
@@ -25,8 +22,8 @@ fun FaernBottomNavigation(
     modifier: Modifier = Modifier,
 ) {
     NavigationBar(
-        containerColor = surfaceContainerLight,
-        contentColor = onPrimaryContainerLight,
+        containerColor = colorScheme.surfaceContainer,
+        contentColor = colorScheme.onPrimaryContainer,
         modifier = modifier,
     ) {
         allScreens.forEach { screen ->
@@ -35,11 +32,11 @@ fun FaernBottomNavigation(
                 selected = selected,
                 onClick = { if (!selected) onBottomTabSelected(screen) },
                 colors = NavigationBarItemDefaults.colors(
-                    indicatorColor = secondaryContainerLight,
-                    selectedIconColor = onSurfaceLight,
-                    selectedTextColor = onSurfaceLight,
-                    unselectedIconColor = onPrimaryContainerLight,
-                    unselectedTextColor = onPrimaryContainerLight
+                    indicatorColor = colorScheme.secondaryContainer,
+                    selectedIconColor = colorScheme.onSurface,
+                    selectedTextColor = colorScheme.onSurface,
+                    unselectedIconColor = colorScheme.onPrimaryContainer,
+                    unselectedTextColor = colorScheme.onPrimaryContainer
                 ),
                 label = {
                     Text(
