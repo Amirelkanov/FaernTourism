@@ -1,21 +1,20 @@
 package com.example.faerntourism.ui.screens.general
 
 import android.content.Context
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
@@ -43,6 +42,7 @@ import com.example.faerntourism.R
 import com.example.faerntourism.data.model.UserData
 import com.example.faerntourism.ui.AuthViewModel
 import com.example.faerntourism.ui.AuthViewModel.Companion.toUserData
+import com.example.faerntourism.ui.components.AccountSettingsListItem
 import com.example.faerntourism.ui.components.GeneralScreenWrapper
 import com.example.faerntourism.ui.theme.FaernTourismTheme
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
@@ -118,6 +118,7 @@ fun LoggedUserScreen(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(5.dp),
         modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 15.dp)
@@ -127,7 +128,7 @@ fun LoggedUserScreen(
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(context = LocalContext.current)
-                    .data(userData.profilePictureUrl + "was")
+                    .data(userData.profilePictureUrl)
                     .crossfade(true).build(),
                 contentDescription = "Фото пользователя ${userData.username ?: ""}",
                 contentScale = ContentScale.Crop,
@@ -137,42 +138,33 @@ fun LoggedUserScreen(
                     .size(150.dp)
                     .clip(CircleShape),
             )
-            Text(userData.username ?: "Пользователь")
-            Text(userData.email ?: "Почта")
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                userData.username ?: "Пользователь",
+                style = typography.headlineLarge
+            )
+            Spacer(modifier = Modifier.height(5.dp))
+            Text(
+                userData.email ?: "Почта",
+                style = typography.bodyLarge,
+                color = colorScheme.onSurfaceVariant
+            )
         }
-
         Spacer(modifier = Modifier.height(30.dp))
         Column(
             modifier = modifier
                 .fillMaxSize()
                 .padding(horizontal = 30.dp)
         ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .clickable(onClick = onLogoutClick)
-                    .fillMaxWidth()
-
-            ) {
-                Row {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.Logout,
-                        tint = colorScheme.onErrorContainer,
-                        contentDescription = null
-                    )
-                    Text("Выйти")
-                }
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowRight,
-                    tint = colorScheme.onErrorContainer,
-                    contentDescription = null
-                )
-            }
+            AccountSettingsListItem(
+                leadingTitle = "Выйти",
+                leadingImgVector = Icons.AutoMirrored.Outlined.Logout,
+                onClick = onLogoutClick
+            )
         }
     }
-
-
 }
+
 
 @Composable
 fun NotLoggedUserScreen(
@@ -183,12 +175,32 @@ fun NotLoggedUserScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "Вы не авторизованы.", style = typography.bodyLarge)
+        Text(text = "Вы не авторизованы", style = typography.headlineLarge)
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = onLoginClick) {
-            Text(text = "Войти")
+        Button(
+            onClick = onLoginClick,
+            colors = ButtonColors(
+                containerColor = colorScheme.onPrimaryContainer,
+                contentColor = colorScheme.onPrimary,
+                disabledContainerColor = colorScheme.background,
+                disabledContentColor = colorScheme.secondary
+            ),
+            contentPadding = PaddingValues(20.dp, 15.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.google_icon),
+                    contentDescription = null
+                )
+
+                Text(text = "Войти с Google", style = typography.titleLarge)
+            }
         }
     }
 }
