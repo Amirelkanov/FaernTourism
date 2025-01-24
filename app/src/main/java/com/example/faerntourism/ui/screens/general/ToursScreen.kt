@@ -113,10 +113,10 @@ fun ToursFeedScreen(
                     },
                     trailingContent = {
                         Text(
-                            "${tour.price}₽",
-                            style = AppTypography.titleMedium,
+                            text = tour.price,
+                            style = AppTypography.titleSmall,
                             maxLines = 1,
-                            color = secondaryLight
+                            color = secondaryLight,
                         )
                     },
                     modifier.clickable(onClick = { uriHandler.openUri(tour.link) })

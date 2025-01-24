@@ -21,7 +21,7 @@ class FireStoreRepositoryImpl @Inject constructor(
 ) : FireStoreRepository {
     override suspend fun getPlaces(): Result<List<Place>> =
         try {
-            val snapshot = fireStore.collection("places").get().await()
+            val snapshot = fireStore.collection(PLACES_COLLECTION).get().await()
 
             val places = snapshot.documents.map { document ->
                 document.toObject<Place>()?.copy(id = document.id) ?: Place()
@@ -34,10 +34,10 @@ class FireStoreRepositoryImpl @Inject constructor(
 
     override suspend fun getArticles(): Result<List<Article>> =
         try {
-            val snapshot = fireStore.collection("articles").get().await()
+            val snapshot = fireStore.collection(ARTICLES_COLLECTION).get().await()
 
             val articles = snapshot.documents.map { document ->
-                document.toObject<Article>()!!.copy(id = document.id)
+                document.toObject<Article>()?.copy(id = document.id) ?: Article()
             }
 
             Result.success(articles)
@@ -48,14 +48,14 @@ class FireStoreRepositoryImpl @Inject constructor(
 
     override suspend fun getPlace(id: String): Result<Place> =
         try {
-            val docSnapshot = fireStore.collection("places")
+            val docSnapshot = fireStore.collection(PLACES_COLLECTION)
                 .document(id)
                 .get()
                 .await()
 
             if (docSnapshot.exists()) {
                 Result.success(
-                    docSnapshot.toObject<Place>()!!.copy(id = docSnapshot.id)
+                    docSnapshot.toObject<Place>()?.copy(id = docSnapshot.id) ?: Place()
                 )
             } else {
                 Result.failure(NoSuchElementException("No place found with id $id"))
@@ -67,14 +67,14 @@ class FireStoreRepositoryImpl @Inject constructor(
 
     override suspend fun getArticle(id: String): Result<Article> =
         try {
-            val docSnapshot = fireStore.collection("articles")
+            val docSnapshot = fireStore.collection(ARTICLES_COLLECTION)
                 .document(id)
                 .get()
                 .await()
 
             if (docSnapshot.exists()) {
                 Result.success(
-                    docSnapshot.toObject<Article>()!!.copy(id = docSnapshot.id)
+                    docSnapshot.toObject<Article>()?.copy(id = docSnapshot.id) ?: Article()
                 )
             } else {
                 Result.failure(NoSuchElementException("No article found with id $id"))
@@ -82,4 +82,9 @@ class FireStoreRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Result.failure(e)
         }
+
+    companion object {
+        const val ARTICLES_COLLECTION = "articles"
+        const val PLACES_COLLECTION = "places"
+    }
 }

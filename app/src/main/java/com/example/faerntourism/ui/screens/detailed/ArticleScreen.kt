@@ -58,7 +58,7 @@ fun SingleArticleInfo(
 ) {
     DetailedScreenWrapper(
         mainCardTitle = article.name,
-        secondaryCardTitle = "500 м",
+        secondaryCardTitle = article.creationDate,
         navigateBack = navigateBack,
         photoURL = article.imgLink,
         content = {

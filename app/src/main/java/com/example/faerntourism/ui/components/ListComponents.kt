@@ -60,7 +60,6 @@ fun FaernListItem(
                 .padding(5.dp)
         ) {
             AsyncImage(
-                // TODO: not working
                 model = ImageRequest.Builder(context = LocalContext.current).data(photoURL)
                     .crossfade(true).build(),
                 contentDescription = title,
@@ -77,11 +76,12 @@ fun FaernListItem(
                 modifier = Modifier
                     .padding(vertical = 5.dp)
                     .fillMaxWidth()
+
             ) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(3.dp),
                     modifier = Modifier
-                        .fillMaxWidth(if (trailingContent === null) 1f else 0.8f)
+                        .fillMaxWidth(if (trailingContent === null) 1f else 0.7f)
                 ) {
                     Text(
                         title,

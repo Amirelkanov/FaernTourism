@@ -1,6 +1,7 @@
 package com.example.faerntourism.di
 
 import android.content.Context
+import com.example.faerntourism.data.CacheInterceptor
 import com.example.faerntourism.network.TourApiService
 import dagger.Module
 import dagger.Provides
@@ -17,19 +18,24 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+    @Provides
+    @Singleton
+    fun provideCacheInterceptor() = CacheInterceptor()
 
     @Provides
     @Singleton
     fun provideOkHttpClient(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
+        cacheInterceptor: CacheInterceptor,
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .cache(
                 Cache(
                     directory = File(context.cacheDir, "http_cache"),
-                    maxSize = 50L * 1024L * 1024L
+                    maxSize = 10L * 1024L * 1024L
                 )
             )
+            .addNetworkInterceptor(cacheInterceptor)
             .build()
     }
 
@@ -37,11 +43,8 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(client: OkHttpClient): Retrofit {
         val baseUrl = "https://trip-kavkaz.com/"
-        return Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .client(client)
-            .build()
+        return Retrofit.Builder().baseUrl(baseUrl)
+            .addConverterFactory(ScalarsConverterFactory.create()).client(client).build()
     }
 
     @Provides
