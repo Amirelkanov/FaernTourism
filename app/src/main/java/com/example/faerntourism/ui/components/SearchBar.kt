@@ -64,7 +64,7 @@ fun SearchBar(
         maxLines = 1,
         singleLine = true,
         textStyle = TextStyle(
-            color = Color.Black, fontSize = 20.sp
+            color = colorScheme.onSurface, fontSize = 20.sp
         )
     )
 }

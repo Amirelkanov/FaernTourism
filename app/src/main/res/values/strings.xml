@@ -12,4 +12,5 @@
     <string name="retry">Попробовать снова</string>
     <string name="loading">Загрузка</string>
     <string name="default_user_image_link">https://i.imgur.com/WrCwiQG.png</string>
+    <string name="maplibre_style_api_key">974eae26-1615-4518-a96b-e0a528963706</string>
 </resources>

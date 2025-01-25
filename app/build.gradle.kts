@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.faerntourism"
-        minSdk = 24
+        minSdk = 25
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.coil.network.okhttp)
 
     implementation(libs.jsoup.jsoup)
+    implementation(libs.ramani.maplibre)
 
     implementation(libs.retrofit)
     implementation(libs.okhttp)
