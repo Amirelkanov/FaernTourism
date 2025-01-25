@@ -18,12 +18,13 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-    @Provides
+
     @Singleton
+    @Provides
     fun provideCacheInterceptor() = CacheInterceptor()
 
-    @Provides
     @Singleton
+    @Provides
     fun provideOkHttpClient(
         @ApplicationContext context: Context,
         cacheInterceptor: CacheInterceptor,
@@ -39,16 +40,16 @@ object NetworkModule {
             .build()
     }
 
-    @Provides
     @Singleton
+    @Provides
     fun provideRetrofit(client: OkHttpClient): Retrofit {
         val baseUrl = "https://trip-kavkaz.com/"
         return Retrofit.Builder().baseUrl(baseUrl)
             .addConverterFactory(ScalarsConverterFactory.create()).client(client).build()
     }
 
-    @Provides
     @Singleton
+    @Provides
     fun provideTourApiService(retrofit: Retrofit): TourApiService {
         return retrofit.create(TourApiService::class.java)
     }

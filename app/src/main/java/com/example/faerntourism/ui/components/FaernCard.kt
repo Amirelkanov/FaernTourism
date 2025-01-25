@@ -83,15 +83,6 @@ fun FaernCard(
                             contentDescription = null,
                         )
                     }
-                    IconButton(
-                        onClick = {}
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.FavoriteBorder,
-                            tint = Color.White,
-                            contentDescription = null,
-                        )
-                    }
                 }
                 Column(
                     modifier = Modifier

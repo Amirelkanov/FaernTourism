@@ -1,12 +1,15 @@
 package com.example.faerntourism.ui.screens.detailed
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,7 +26,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.faerntourism.data.model.Place
-import com.example.faerntourism.ui.components.DetailedScreenWrapper
+import com.example.faerntourism.ui.components.FaernCard
 import com.example.faerntourism.ui.components.FaernMap
 import com.example.faerntourism.ui.components.Section
 import com.example.faerntourism.ui.screens.general.PlaceViewState
@@ -83,7 +86,8 @@ fun SinglePlaceInfo(
     }
 
 
-    DetailedScreenWrapper(mainCardTitle = place.name,
+    DetailedScreenWrapper(
+        mainCardTitle = place.name,
         secondaryCardTitle = "500 м",
         photoURL = place.imgLink,
         navigateBack = {
@@ -128,3 +132,25 @@ fun SinglePlaceInfo(
         })
 }
 
+@Composable
+fun DetailedScreenWrapper(
+    mainCardTitle: String,
+    secondaryCardTitle: String,
+    photoURL: String = "",
+    navigateBack: () -> Unit,
+    content: @Composable () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Scaffold(topBar = {
+        FaernCard(
+            mainCardTitle,
+            secondaryCardTitle,
+            photoURL,
+            navigateBack = navigateBack
+        )
+    }) { contentPadding ->
+        Box(modifier = modifier.padding(contentPadding)) {
+            content()
+        }
+    }
+}
