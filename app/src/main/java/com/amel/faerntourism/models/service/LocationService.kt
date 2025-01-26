@@ -53,7 +53,7 @@ class LocationService : Service() {
     private fun start() {
         val notification = NotificationCompat.Builder(this, LOCATION_NOTIFICATION_CHANNEL_ID)
             .setContentTitle("Ищем интересные места поблизости...")
-            .setSmallIcon(R.drawable.ic_launcher_background)
+            .setSmallIcon(R.drawable.google_icon)
             .setOngoing(true)
 
         val notificationManager =

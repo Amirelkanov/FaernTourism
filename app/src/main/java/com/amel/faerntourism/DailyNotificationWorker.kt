@@ -25,7 +25,7 @@ class DailyNotificationWorker(appContext: Context, workerParams: WorkerParameter
             .setContentTitle("Это интересно!")
             .setContentText("Донбеттыр - повелитель подводного царства...")
             .setOngoing(false)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.google_icon)
             .build()
 
         notificationManager.notify(500, notification)
