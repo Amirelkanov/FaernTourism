@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.faerntourism"
+    namespace = "com.amel.faerntourism"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.faerntourism"
+        applicationId = "com.amel.faerntourism"
         minSdk = 25
         targetSdk = 34
         versionCode = 1

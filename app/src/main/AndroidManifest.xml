@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.faerntourism">
+    package="com.amel.faerntourism">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
-        android:name=".FaernApplication"
+        android:name="com.amel.faerntourism.FaernApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -21,9 +21,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FaernTourism"
         tools:targetApi="31">
-        <service android:name=".models.service.LocationService" android:foregroundServiceType="location"/>
+        <service android:name="com.amel.faerntourism.models.service.LocationService" android:foregroundServiceType="location"/>
         <activity
-            android:name=".FaernActivity"
+            android:name="com.amel.faerntourism.FaernActivity"
             android:exported="true"
             android:theme="@style/Theme.FaernTourism">
             <intent-filter>
