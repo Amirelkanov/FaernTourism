@@ -4,10 +4,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -34,7 +37,7 @@ fun GeneralScreenWrapper(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(0.1f)
+                    .height(80.dp)
                     .background(color = colorScheme.background)
             ) {
                 Text(
@@ -66,22 +69,31 @@ fun Section(
     title: String,
     information: @Composable () -> Unit,
     actionButton: (@Composable () -> Unit)? = null,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     modifier: Modifier = Modifier
 ) {
-    Column(
+    LazyColumn (
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(10.dp),
+        contentPadding = contentPadding,
         modifier = modifier
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                title,
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Medium,
-                color = colorScheme.onSurface
-            )
-            actionButton?.invoke()
+        item {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    title,
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = colorScheme.onSurface
+                )
+                actionButton?.invoke()
+            }
         }
-        information()
+        item {
+            information()
+        }
     }
 }

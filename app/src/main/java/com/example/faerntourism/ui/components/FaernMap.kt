@@ -65,16 +65,12 @@ fun FaernMap(latitude: Double, longitude: Double) {
             )
         }
 
-        val uriHandler = LocalUriHandler.current
-
         val styleUrl =
             "https://tiles.stadiamaps.com/styles/alidade_smooth${if (isSystemInDarkTheme()) "_dark" else ""}.json?api_key=${
                 stringResource(
                     R.string.maplibre_style_api_key
                 )
             }"
-
-        val yandexMapsUrl = "https://maps.yandex.ru/?text=$latitude+$longitude"
 
         Box(
             modifier = Modifier
@@ -86,9 +82,6 @@ fun FaernMap(latitude: Double, longitude: Double) {
                 styleBuilder = Style.Builder().fromUri(styleUrl),
                 cameraPosition = cameraPosition,
                 uiSettings = UiSettings(isLogoEnabled = false),
-                onMapClick = {
-                    uriHandler.openUri(yandexMapsUrl)
-                }
             ) {
                 Symbol(center = targetCoordinates)
             }

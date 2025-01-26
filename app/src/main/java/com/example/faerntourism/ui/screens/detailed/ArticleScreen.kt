@@ -173,11 +173,11 @@ fun SingleArticleInfo(
         AnimatedVisibility(
             visible = showButton,
             enter = slideInVertically(
-                initialOffsetY = { fullHeight -> fullHeight }, // Start below the screen
+                initialOffsetY = { fullHeight -> fullHeight },
                 animationSpec = tween(durationMillis = 150, easing = LinearOutSlowInEasing)
             ),
             exit = slideOutVertically(
-                targetOffsetY = { fullHeight -> fullHeight }, // Exit below the screen
+                targetOffsetY = { fullHeight -> fullHeight },
                 animationSpec = tween(durationMillis = 150, easing = FastOutLinearInEasing)
             ),
             modifier = Modifier
