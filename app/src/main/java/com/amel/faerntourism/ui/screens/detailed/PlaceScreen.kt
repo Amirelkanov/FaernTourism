@@ -1,8 +1,11 @@
 package com.amel.faerntourism.ui.screens.detailed
 
 import android.content.Context
+import android.location.Address
 import android.location.Geocoder
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -26,6 +29,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -46,8 +50,13 @@ import com.amel.faerntourism.ui.screens.general.PlaceViewState
 import com.amel.faerntourism.ui.screens.general.PlacesViewModel
 import com.amel.faerntourism.ui.screens.side.ErrorScreen
 import com.amel.faerntourism.ui.screens.side.LoadingScreen
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Locale
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 @Composable
 fun PlaceScreen(
@@ -120,7 +129,7 @@ fun SinglePlaceInfo(
             when (selectedTabIndex) {
                 0 -> Section(
                     title = titles[0], information = {
-                        if (place.description.isEmpty()) Text(text = "Описание отсутствует.")
+                        if (place.description.isEmpty()) Text(text = "Описание отсутствует")
                         else Text(
                             text = place.description,
                             style = TextStyle(
@@ -132,6 +141,13 @@ fun SinglePlaceInfo(
                 )
 
                 1 -> if (place.location != null) {
+
+                    val (latitude, longitude) = place.location.latitude to place.location.longitude
+
+                    val address by produceState(initialValue = "Загрузка...") {
+                        value = fetchAddress(latitude, longitude, context)
+                    }
+
                     Section(
                         title = titles[1],
                         information = {
@@ -139,25 +155,19 @@ fun SinglePlaceInfo(
                                 verticalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
                                 Text(
-                                    text = fetchAddress(
-                                        place.location.latitude,
-                                        place.location.longitude,
-                                        context
-                                    ),
+                                    text = address,
                                     style = TextStyle(
                                         color = colorScheme.onSurface,
                                         fontSize = 18.sp
                                     ),
                                 )
-                                FaernMap(
-                                    place.location.latitude, place.location.longitude
-                                )
+                                FaernMap(latitude, longitude)
                             }
 
                         },
                         actionButton = {
                             val yandexMapsUrl =
-                                "https://maps.yandex.ru/?text=${place.location.latitude}+${place.location.longitude}"
+                                "https://maps.yandex.ru/?text=$latitude+$longitude"
 
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -193,7 +203,7 @@ fun SinglePlaceInfo(
                         title = titles[1],
                         information = {
                             Text(
-                                "Информации о местоположении отсутствует.",
+                                "Информация о местоположении отсутствует",
                                 style = TextStyle(
                                     color = colorScheme.onSurface, fontSize = 18.sp
                                 ),
@@ -207,18 +217,48 @@ fun SinglePlaceInfo(
     }
 }
 
-
-private fun fetchAddress(latitude: Double, longitude: Double, context: Context): String {
+suspend fun fetchAddress(
+    latitude: Double,
+    longitude: Double,
+    context: Context
+): String = withContext(Dispatchers.IO) {
     val geocoder = Geocoder(context, Locale("ru"))
-
-    return try {
-        val addresses = geocoder.getFromLocation(latitude, longitude, 1)
-        if (!addresses.isNullOrEmpty()) {
-            addresses[0].getAddressLine(0) ?: "No address found"
+    try {
+        val addresses = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            getAddressesAsync(geocoder, latitude, longitude, 1)
         } else {
-            "No address found"
+            geocoder.getFromLocation(latitude, longitude, 1)
+        }
+
+        if (!addresses.isNullOrEmpty()) {
+            addresses[0].getAddressLine(0) ?: "Адрес не найден"
+        } else {
+            "Адрес не найден"
         }
     } catch (e: Exception) {
-        "Error fetching address: ${e.message}"
+        "Ошибка при получении адреса: ${e.message}"
     }
+}
+
+
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+private suspend fun getAddressesAsync(
+    geocoder: Geocoder,
+    latitude: Double,
+    longitude: Double,
+    maxResults: Int
+): List<Address> = suspendCoroutine { continuation ->
+    geocoder.getFromLocation(latitude, longitude, maxResults,
+        object : Geocoder.GeocodeListener {
+            override fun onGeocode(addresses: MutableList<Address>) {
+                continuation.resume(addresses)
+            }
+
+            override fun onError(errorMessage: String?) {
+                continuation.resumeWithException(
+                    Exception(errorMessage ?: "Geocoding error")
+                )
+            }
+        }
+    )
 }
