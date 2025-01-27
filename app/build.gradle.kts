@@ -80,6 +80,9 @@ dependencies {
     implementation(libs.jsoup.jsoup)
     implementation(libs.ramani.maplibre)
 
+    implementation(libs.google.firebase.analytics)
+    implementation(libs.google.firebase.messaging)
+
     implementation(libs.retrofit)
     implementation(libs.okhttp)
     implementation(libs.converter.scalars)

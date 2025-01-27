@@ -1,6 +1,7 @@
 package com.amel.faerntourism
 
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import com.amel.faerntourism.services.createFcmNotificationChannel
 import com.amel.faerntourism.ui.AuthViewModel
 import com.amel.faerntourism.ui.screens.detailed.ArticleScreen
 import com.amel.faerntourism.ui.screens.detailed.PlaceScreen
@@ -55,6 +57,8 @@ class FaernActivity : ComponentActivity() {
             periodicRequest
         )
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) createFcmNotificationChannel(this)
+
         setContent {
             FaernTourismTheme {
                 Surface(
@@ -67,6 +71,8 @@ class FaernActivity : ComponentActivity() {
             }
         }
     }
+
+
 }
 
 @Composable
