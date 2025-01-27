@@ -1,4 +1,4 @@
-package com.amel.faerntourism.services
+package com.amel.faerntourism.service
 
 import android.annotation.SuppressLint
 import android.util.Log

@@ -84,6 +84,7 @@ dependencies {
     implementation(libs.google.firebase.messaging)
 
     implementation(libs.retrofit)
+    implementation(libs.play.services.location)
     implementation(libs.okhttp)
     implementation(libs.converter.scalars)
 

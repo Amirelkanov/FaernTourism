@@ -14,10 +14,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.amel.faerntourism.services.createFcmNotificationChannel
+import com.amel.faerntourism.service.createFcmNotificationChannel
 import com.amel.faerntourism.ui.AuthViewModel
 import com.amel.faerntourism.ui.screens.detailed.ArticleScreen
 import com.amel.faerntourism.ui.screens.detailed.PlaceScreen
@@ -28,6 +28,7 @@ import com.amel.faerntourism.ui.screens.general.ToursScreen
 import com.amel.faerntourism.ui.theme.FaernTourismTheme
 import com.amel.faerntourism.worker.InterestingPlaceNotificationWorker
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class FaernActivity : ComponentActivity() {
@@ -37,23 +38,13 @@ class FaernActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        /* todo: поменяешь на это
-        val periodicRequest = PeriodicWorkRequestBuilder<DailyInterestingPlaceNotificationWorker>(
+        val periodicRequest = PeriodicWorkRequestBuilder<InterestingPlaceNotificationWorker>(
             12, TimeUnit.HOURS,
         ).build()
 
         WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
             DAILY_WORK_NAME,
             ExistingPeriodicWorkPolicy.KEEP,
-            periodicRequest
-        )*/
-
-        val periodicRequest =
-            OneTimeWorkRequestBuilder<InterestingPlaceNotificationWorker>().build()
-
-        WorkManager.getInstance(applicationContext).enqueueUniqueWork(
-            DAILY_WORK_NAME,
-            ExistingWorkPolicy.REPLACE,
             periodicRequest
         )
 

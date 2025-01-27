@@ -1,6 +1,7 @@
 package com.amel.faerntourism.ui.screens.general
 
 
+import android.location.Location
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,7 +14,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,6 +29,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.amel.faerntourism.FaernDestination
 import com.amel.faerntourism.Home
 import com.amel.faerntourism.data.model.Place
+import com.amel.faerntourism.ui.LocationViewModel
+import com.amel.faerntourism.ui.LocationViewModel.Companion.prettifyDistance
+import com.amel.faerntourism.ui.LocationViewModel.Companion.toLocation
 import com.amel.faerntourism.ui.components.FaernListItem
 import com.amel.faerntourism.ui.components.GeneralScreenWrapper
 import com.amel.faerntourism.ui.components.ListItemAdditionalInfo
@@ -37,6 +43,7 @@ import com.amel.faerntourism.ui.screens.side.LoadingScreen
 fun HomeScreen(
     onBottomTabSelected: (FaernDestination) -> Unit,
     onPlaceClick: (String) -> Unit,
+    locationViewModel: LocationViewModel = hiltViewModel(),
     placesViewModel: PlacesViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
 ) {
@@ -46,6 +53,18 @@ fun HomeScreen(
     }
 
     val placesViewState by placesViewModel.placeListViewStateFlow.collectAsState()
+    val location by locationViewModel.locationState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        locationViewModel.startTracking()
+    }
+
+    // Clean up when leaving the screen
+    DisposableEffect(Unit) {
+        onDispose {
+            locationViewModel.stopTracking()
+        }
+    }
 
     GeneralScreenWrapper(
         currentScreen = Home,
@@ -53,6 +72,7 @@ fun HomeScreen(
         content = {
             when (val state = placesViewState) {
                 is PlaceListViewState.Success -> PlacesFeedScreen(
+                    location,
                     state.places,
                     onPlaceClick,
                     modifier
@@ -72,6 +92,7 @@ fun HomeScreen(
 
 @Composable
 fun PlacesFeedScreen(
+    userLocation: Location?,
     places: List<Place>,
     onPlaceClick: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -90,27 +111,41 @@ fun PlacesFeedScreen(
 
         val searchedText = textState.value.text
 
+        val sortedPlaces = remember(userLocation, places, searchedText) {
+            places.filter {
+                it.name.contains(searchedText, ignoreCase = true) && it.location != null
+            }.sortedBy { place ->
+                userLocation?.distanceTo(Location("").apply {
+                    latitude = place.location!!.latitude
+                    longitude = place.location.longitude
+                }) ?: Float.MAX_VALUE
+            }
+        }
+
+
         LazyColumn {
-            items(places.filter {
-                it.name.contains(searchedText, ignoreCase = true)
-            }) { place ->
+            items(sortedPlaces) { place ->
                 FaernListItem(
                     title = place.name,
                     description = place.description,
                     photoURL = place.imgLink,
                     descriptionMaxLines = 2,
                     additionalInfo = {
-                        ListItemAdditionalInfo(
-                            icon = {
-                                Icon(
-                                    Icons.Default.LocationOn,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp),
-                                    tint = colorScheme.secondary
-                                )
-                            },
-                            text = "50 м от вас"
-                        )
+                        if (place.location != null)
+                            ListItemAdditionalInfo(
+                                icon = {
+                                    Icon(
+                                        Icons.Default.LocationOn,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp),
+                                        tint = colorScheme.secondary
+                                    )
+                                },
+                                text = if (userLocation != null)
+                                    "${prettifyDistance(userLocation.distanceTo(place.location.toLocation()))} от вас"
+                                else "Загрузка..."
+                            )
+                        else Text("")
                     },
                     modifier = Modifier.clickable(
                         onClick = { onPlaceClick(place.id) }
@@ -120,3 +155,6 @@ fun PlacesFeedScreen(
         }
     }
 }
+
+
+

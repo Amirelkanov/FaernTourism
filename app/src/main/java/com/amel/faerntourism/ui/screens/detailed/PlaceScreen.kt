@@ -3,8 +3,8 @@ package com.amel.faerntourism.ui.screens.detailed
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
+import android.location.Location
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,6 +25,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -43,6 +44,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.amel.faerntourism.data.model.Place
+import com.amel.faerntourism.ui.LocationViewModel
+import com.amel.faerntourism.ui.LocationViewModel.Companion.prettifyDistance
+import com.amel.faerntourism.ui.LocationViewModel.Companion.toLocation
 import com.amel.faerntourism.ui.components.FaernCard
 import com.amel.faerntourism.ui.components.FaernMap
 import com.amel.faerntourism.ui.components.Section
@@ -63,17 +67,26 @@ fun PlaceScreen(
     placeId: String,
     navigateBack: () -> Unit,
     placesViewModel: PlacesViewModel = hiltViewModel(),
+    locationViewModel: LocationViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
 ) {
     LaunchedEffect(Unit) {
         placesViewModel.getPlace(placeId)
+        locationViewModel.startTracking()
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            locationViewModel.stopTracking()
+        }
     }
 
     val placeViewState by placesViewModel.placeViewStateFlow.collectAsState()
+    val location by locationViewModel.locationState.collectAsState()
 
     when (val state = placeViewState) {
         is PlaceViewState.Success -> SinglePlaceInfo(
-            state.place, navigateBack, modifier
+            location, state.place, navigateBack, modifier
         )
 
         is PlaceViewState.Error -> {
@@ -91,6 +104,7 @@ fun PlaceScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SinglePlaceInfo(
+    userLocation: Location?,
     place: Place, navigateBack: () -> Unit, modifier: Modifier = Modifier
 ) {
 
@@ -106,7 +120,12 @@ fun SinglePlaceInfo(
     Scaffold(topBar = {
         FaernCard(
             mainTitle = place.name,
-            secondaryTitle = "500 м", // TODO
+            secondaryTitle =
+            if (place.location != null)
+                if (userLocation != null)
+                    prettifyDistance(userLocation.distanceTo(place.location.toLocation()))
+                else "Загрузка..."
+            else "",
             photoURL = place.imgLink,
             navigateBack = navigateBack
         )
@@ -166,15 +185,15 @@ fun SinglePlaceInfo(
 
                         },
                         actionButton = {
-                            val yandexMapsUrl =
-                                "https://maps.yandex.ru/?text=$latitude+$longitude"
+                            val yandexMapsMapUrl =
+                                "https://maps.yandex.ru/?ll=$longitude,$latitude&text=${place.name}&z=17"
 
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 IconButton(
-                                    onClick = { uriHandler.openUri(yandexMapsUrl) },
+                                    onClick = { uriHandler.openUri(yandexMapsMapUrl) },
                                     modifier = Modifier.size(32.dp)
                                 ) {
                                     Icon(
@@ -183,15 +202,20 @@ fun SinglePlaceInfo(
                                         contentDescription = "Открыть карту"
                                     )
                                 }
-                                IconButton(
-                                    onClick = { Log.d("yo", "todo") },
-                                    modifier = Modifier.size(32.dp)
-                                ) { // TODO
-                                    Icon(
-                                        imageVector = Icons.Default.Route,
-                                        tint = colorScheme.onSurface,
-                                        contentDescription = "Построить маршрут"
-                                    )
+                                if (userLocation != null) {
+                                    val yandexMapsRouteUrl =
+                                        "https://maps.yandex.ru/?rtext=${userLocation.latitude},${userLocation.longitude}~$latitude,$longitude&rtt=mt"
+
+                                    IconButton(
+                                        onClick = { uriHandler.openUri(yandexMapsRouteUrl) },
+                                        modifier = Modifier.size(32.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Route,
+                                            tint = colorScheme.onSurface,
+                                            contentDescription = "Построить маршрут"
+                                        )
+                                    }
                                 }
                             }
                         },
