@@ -66,9 +66,12 @@ dependencies {
     implementation(libs.android.maps.utils)
     implementation(libs.material3)
 
-    implementation(libs.hilt.android)
     implementation(libs.firebase.firestore.ktx)
+
+    implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
+    implementation(libs.androidx.hilt.work)
+    kapt(libs.androidx.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(libs.coil.compose)

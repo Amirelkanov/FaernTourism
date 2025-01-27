@@ -13,6 +13,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.amel.faerntourism.ui.AuthViewModel
 import com.amel.faerntourism.ui.screens.detailed.ArticleScreen
 import com.amel.faerntourism.ui.screens.detailed.PlaceScreen
@@ -21,6 +24,7 @@ import com.amel.faerntourism.ui.screens.general.ArticlesScreen
 import com.amel.faerntourism.ui.screens.general.HomeScreen
 import com.amel.faerntourism.ui.screens.general.ToursScreen
 import com.amel.faerntourism.ui.theme.FaernTourismTheme
+import com.amel.faerntourism.worker.InterestingPlaceNotificationWorker
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -30,6 +34,26 @@ class FaernActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        /* todo: поменяешь на это
+        val periodicRequest = PeriodicWorkRequestBuilder<DailyInterestingPlaceNotificationWorker>(
+            12, TimeUnit.HOURS,
+        ).build()
+
+        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+            DAILY_WORK_NAME,
+            ExistingPeriodicWorkPolicy.KEEP,
+            periodicRequest
+        )*/
+
+        val periodicRequest =
+            OneTimeWorkRequestBuilder<InterestingPlaceNotificationWorker>().build()
+
+        WorkManager.getInstance(applicationContext).enqueueUniqueWork(
+            DAILY_WORK_NAME,
+            ExistingWorkPolicy.REPLACE,
+            periodicRequest
+        )
 
         setContent {
             FaernTourismTheme {
@@ -43,7 +67,6 @@ class FaernActivity : ComponentActivity() {
             }
         }
     }
-
 }
 
 @Composable
@@ -87,13 +110,11 @@ fun FaernNavHost(
                 viewModel = authViewModel
             )
         }
-        /* composable(route = Favourite.route) { // TODO
-             FavScreen()
-         }*/
 
         composable(
             route = SinglePlace.routeWithArgs,
-            arguments = SinglePlace.arguments
+            arguments = SinglePlace.arguments,
+            deepLinks = SinglePlace.deepLinks
         ) { navBackStackEntry ->
             val placeId = navBackStackEntry.arguments?.getString(SinglePlace.PLACE_ID_ARG)
             if (placeId != null) {

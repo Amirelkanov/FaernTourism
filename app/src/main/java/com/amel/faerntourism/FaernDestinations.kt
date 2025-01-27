@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 
 /**
  * Contact for information needed on every navigation destination
@@ -75,6 +76,9 @@ object SinglePlace : DetailedFaernDestination {
     override val arguments: List<NamedNavArgument> =
         listOf(navArgument(PLACE_ID_ARG) { type = NavType.StringType })
     val routeWithArgs = "$route/{$PLACE_ID_ARG}"
+    val deepLinks = listOf(navDeepLink {
+        uriPattern = "faern://${route}/{${PLACE_ID_ARG}}"
+    })
 }
 
 object SingleArticle : DetailedFaernDestination {

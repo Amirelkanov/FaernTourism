@@ -5,9 +5,12 @@ coilCompose = "3.0.4"
 coilNetworkOkhttp = "3.0.4"
 converterScalars = "2.9.0"
 firebaseBom = "33.8.0"
+
 hiltAndroid = "2.51.1"
-hiltAndroidCompiler = "2.51.1"
 hiltNavigationCompose = "1.2.0"
+androidxHiltWork = "1.2.0"
+androidxHiltCompiler = "1.2.0"
+
 jsoupVersion = "1.16.1"
 kotlin = "2.0.0"
 coreKtx = "1.15.0"
@@ -34,7 +37,6 @@ firebaseFirestoreKtx = "25.1.1"
 [libraries]
 android-maps-utils = { module = "com.google.maps.android:android-maps-utils", version.ref = "androidMapsUtils" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
@@ -44,8 +46,13 @@ firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
-hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
+
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltAndroid" }
+hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hiltAndroid" }
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+androidx-hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "androidxHiltWork" }
+androidx-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "androidxHiltCompiler" }
+
 jsoup-jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoupVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
