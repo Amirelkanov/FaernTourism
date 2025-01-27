@@ -88,6 +88,9 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.converter.scalars)
 
+    api(libs.moko.permissions)
+    api(libs.moko.permissions.compose)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

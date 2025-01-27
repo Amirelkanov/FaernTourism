@@ -32,17 +32,21 @@ import com.amel.faerntourism.data.model.Place
 import com.amel.faerntourism.ui.LocationViewModel
 import com.amel.faerntourism.ui.LocationViewModel.Companion.prettifyDistance
 import com.amel.faerntourism.ui.LocationViewModel.Companion.toLocation
+import com.amel.faerntourism.ui.PermissionsViewModel
 import com.amel.faerntourism.ui.components.FaernListItem
 import com.amel.faerntourism.ui.components.GeneralScreenWrapper
 import com.amel.faerntourism.ui.components.ListItemAdditionalInfo
 import com.amel.faerntourism.ui.components.SearchBar
 import com.amel.faerntourism.ui.screens.side.ErrorScreen
 import com.amel.faerntourism.ui.screens.side.LoadingScreen
+import dev.icerock.moko.permissions.Permission
+import dev.icerock.moko.permissions.PermissionState
 
 @Composable
 fun HomeScreen(
     onBottomTabSelected: (FaernDestination) -> Unit,
     onPlaceClick: (String) -> Unit,
+    permissionsViewModel: PermissionsViewModel,
     locationViewModel: LocationViewModel = hiltViewModel(),
     placesViewModel: PlacesViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
@@ -54,9 +58,10 @@ fun HomeScreen(
 
     val placesViewState by placesViewModel.placeListViewStateFlow.collectAsState()
     val location by locationViewModel.locationState.collectAsState()
+    val locationPermissionState = permissionsViewModel.permissionsMap[Permission.LOCATION]
 
-    LaunchedEffect(Unit) {
-        locationViewModel.startTracking()
+    LaunchedEffect(locationPermissionState) {
+        if (locationPermissionState == PermissionState.Granted) locationViewModel.startTracking()
     }
 
     // Clean up when leaving the screen

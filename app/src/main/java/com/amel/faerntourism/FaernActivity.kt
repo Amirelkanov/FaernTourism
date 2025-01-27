@@ -9,7 +9,9 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,6 +21,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.amel.faerntourism.service.createFcmNotificationChannel
 import com.amel.faerntourism.ui.AuthViewModel
+import com.amel.faerntourism.ui.PermissionsViewModel
 import com.amel.faerntourism.ui.screens.detailed.ArticleScreen
 import com.amel.faerntourism.ui.screens.detailed.PlaceScreen
 import com.amel.faerntourism.ui.screens.general.AccountScreen
@@ -28,6 +31,8 @@ import com.amel.faerntourism.ui.screens.general.ToursScreen
 import com.amel.faerntourism.ui.theme.FaernTourismTheme
 import com.amel.faerntourism.worker.InterestingPlaceNotificationWorker
 import dagger.hilt.android.AndroidEntryPoint
+import dev.icerock.moko.permissions.compose.BindEffect
+import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
@@ -71,6 +76,15 @@ fun FaernNavHost(
     navController: NavHostController,
     authViewModel: AuthViewModel
 ) {
+    val factory = rememberPermissionsControllerFactory()
+    val controller = remember(factory) { factory.createPermissionsController() }
+
+    BindEffect(controller)
+
+    val permissionsViewModel = viewModel { PermissionsViewModel(controller) }
+
+    permissionsViewModel.provideOrRequestRecordAllPermissions()
+
     NavHost(navController = navController, startDestination = Home.route) {
         composable(route = Home.route) {
             HomeScreen(
@@ -80,6 +94,7 @@ fun FaernNavHost(
                 onPlaceClick = { placeId ->
                     navController.navigateToSinglePlace(placeId)
                 },
+                permissionsViewModel = permissionsViewModel
             )
         }
         composable(route = Tours.route) {
@@ -117,7 +132,8 @@ fun FaernNavHost(
             if (placeId != null) {
                 PlaceScreen(
                     placeId = placeId,
-                    navigateBack = { navController.popBackStack() }
+                    navigateBack = { navController.popBackStack() },
+                    permissionsViewModel = permissionsViewModel
                 )
             }
         }

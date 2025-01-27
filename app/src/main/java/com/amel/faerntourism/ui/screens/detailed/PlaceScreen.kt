@@ -47,6 +47,7 @@ import com.amel.faerntourism.data.model.Place
 import com.amel.faerntourism.ui.LocationViewModel
 import com.amel.faerntourism.ui.LocationViewModel.Companion.prettifyDistance
 import com.amel.faerntourism.ui.LocationViewModel.Companion.toLocation
+import com.amel.faerntourism.ui.PermissionsViewModel
 import com.amel.faerntourism.ui.components.FaernCard
 import com.amel.faerntourism.ui.components.FaernMap
 import com.amel.faerntourism.ui.components.Section
@@ -54,6 +55,8 @@ import com.amel.faerntourism.ui.screens.general.PlaceViewState
 import com.amel.faerntourism.ui.screens.general.PlacesViewModel
 import com.amel.faerntourism.ui.screens.side.ErrorScreen
 import com.amel.faerntourism.ui.screens.side.LoadingScreen
+import dev.icerock.moko.permissions.Permission
+import dev.icerock.moko.permissions.PermissionState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -66,13 +69,13 @@ import kotlin.coroutines.suspendCoroutine
 fun PlaceScreen(
     placeId: String,
     navigateBack: () -> Unit,
+    permissionsViewModel: PermissionsViewModel,
     placesViewModel: PlacesViewModel = hiltViewModel(),
     locationViewModel: LocationViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
 ) {
     LaunchedEffect(Unit) {
         placesViewModel.getPlace(placeId)
-        locationViewModel.startTracking()
     }
 
     DisposableEffect(Unit) {
@@ -83,6 +86,11 @@ fun PlaceScreen(
 
     val placeViewState by placesViewModel.placeViewStateFlow.collectAsState()
     val location by locationViewModel.locationState.collectAsState()
+    val locationPermissionState = permissionsViewModel.permissionsMap[Permission.LOCATION]
+
+    LaunchedEffect(locationPermissionState) {
+        if (locationPermissionState == PermissionState.Granted) locationViewModel.startTracking()
+    }
 
     when (val state = placeViewState) {
         is PlaceViewState.Success -> SinglePlaceInfo(

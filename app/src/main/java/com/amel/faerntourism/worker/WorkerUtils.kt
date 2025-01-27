@@ -11,15 +11,15 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.net.toUri
-import com.amel.faerntourism.INTERESTING_PLACE_CHANNEL_ID
 import com.amel.faerntourism.FaernActivity
+import com.amel.faerntourism.INTERESTING_PLACE_CHANNEL_ID
+import com.amel.faerntourism.INTERESTING_PLACE_NOTIFICATION_CHANNEL_DESCRIPTION
+import com.amel.faerntourism.INTERESTING_PLACE_NOTIFICATION_CHANNEL_NAME
 import com.amel.faerntourism.INTERESTING_PLACE_NOTIFICATION_ID
 import com.amel.faerntourism.INTERESTING_PLACE_NOTIFICATION_TITLE
 import com.amel.faerntourism.R
 import com.amel.faerntourism.REQUEST_CODE
 import com.amel.faerntourism.SinglePlace
-import com.amel.faerntourism.INTERESTING_PLACE_NOTIFICATION_CHANNEL_DESCRIPTION
-import com.amel.faerntourism.INTERESTING_PLACE_NOTIFICATION_CHANNEL_NAME
 import com.amel.faerntourism.data.model.Place
 
 @SuppressLint("MissingPermission")
