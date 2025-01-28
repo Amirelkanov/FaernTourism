@@ -2,6 +2,7 @@ package com.amel.faerntourism.ui.screens.general
 
 import android.app.Activity
 import android.content.Context
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,6 +26,7 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -46,6 +48,7 @@ import com.amel.faerntourism.data.model.UserData
 import com.amel.faerntourism.ui.AuthViewModel
 import com.amel.faerntourism.ui.AuthViewModel.Companion.toUserData
 import com.amel.faerntourism.ui.ReviewViewModel
+import com.amel.faerntourism.ui.UserFlowEvent
 import com.amel.faerntourism.ui.components.AccountSettingsListItem
 import com.amel.faerntourism.ui.components.GeneralScreenWrapper
 import com.amel.faerntourism.ui.theme.FaernTourismTheme
@@ -83,6 +86,22 @@ fun AccountScreen(
                 }
             } catch (e: ApiException) {
                 e.printStackTrace()
+            }
+        }
+    }
+
+
+    LaunchedEffect(Unit) {
+        reviewViewModel.event.collect { event ->
+            when (event) {
+                is UserFlowEvent.ReviewEnd -> {}
+                is UserFlowEvent.ReviewExists -> {
+                    Toast.makeText(
+                        context,
+                        "Вы уже оставляли отзыв на это приложение. Спасибо!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
     }
