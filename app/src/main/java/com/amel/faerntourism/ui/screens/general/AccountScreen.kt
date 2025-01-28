@@ -1,6 +1,10 @@
 package com.amel.faerntourism.ui.screens.general
 
+import android.app.Activity
 import android.content.Context
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -31,9 +35,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.credentials.ClearCredentialStateRequest
-import androidx.credentials.CredentialManager
-import androidx.credentials.GetCredentialRequest
+import androidx.core.content.ContextCompat.getString
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -47,8 +49,10 @@ import com.amel.faerntourism.ui.ReviewViewModel
 import com.amel.faerntourism.ui.components.AccountSettingsListItem
 import com.amel.faerntourism.ui.components.GeneralScreenWrapper
 import com.amel.faerntourism.ui.theme.FaernTourismTheme
+import com.google.android.gms.auth.api.identity.BeginSignInRequest
+import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.gms.common.api.ApiException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.launch
 
 @Composable
@@ -63,10 +67,41 @@ fun AccountScreen(
     val scope = rememberCoroutineScope()
 
     val context = LocalContext.current
-    val credentialManager = CredentialManager.create(context)
+    /*val credentialManager = CredentialManager.create(context)
     val request = GetCredentialRequest.Builder()
         .addCredentialOption(buildGoogleIdOption(context))
+        .build()*/
+
+    val oneTapClient = Identity.getSignInClient(context)
+
+    val signInRequest = BeginSignInRequest.builder()
+        .setGoogleIdTokenRequestOptions(
+            BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
+                .setSupported(true)
+                .setServerClientId(getString(context, R.string.web_client_id))
+                .setFilterByAuthorizedAccounts(false)
+                .build()
+        )
         .build()
+
+    val oneTapLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data = result.data
+            try {
+                val credential = oneTapClient.getSignInCredentialFromIntent(data)
+                val idToken = credential.googleIdToken
+                if (idToken != null) {
+                    scope.launch {
+                        authViewModel.signIn(idToken)
+                    }
+                }
+            } catch (e: ApiException) {
+                e.printStackTrace()
+            }
+        }
+    }
 
 
     FaernTourismTheme {
@@ -81,9 +116,9 @@ fun AccountScreen(
                             onLogoutClick = {
                                 scope.launch {
                                     authViewModel.signOut {
-                                        credentialManager.clearCredentialState(
+                                        /*credentialManager.clearCredentialState(
                                             ClearCredentialStateRequest()
-                                        )
+                                        )*/
                                     }
                                 }
                             },
@@ -96,18 +131,34 @@ fun AccountScreen(
                     }
                 } ?: NotLoggedUserScreen(
                     onLoginClick = {
-                        scope.launch {
+                        /*scope.launch {
                             try {
-                                val credentialResult =
+                                *//*val credentialResult =
                                     credentialManager.getCredential(context, request)
                                 val googleIdTokenCredential =
                                     GoogleIdTokenCredential.createFrom(credentialResult.credential.data)
-                                val googleIdToken = googleIdTokenCredential.idToken
+                                val googleIdToken = googleIdTokenCredential.idToken*//*
+
+                                val credential = oneTapClient.getSignInCredentialFromIntent(data)
+                                val idToken = credential.googleIdToken
+
+
 
                                 authViewModel.signIn(googleIdToken)
                             } catch (e: Exception) {
                                 e.printStackTrace()
                             }
+                        }*/
+                        scope.launch {
+                            oneTapClient.beginSignIn(signInRequest)
+                                .addOnSuccessListener { result ->
+                                    oneTapLauncher.launch(
+                                        IntentSenderRequest.Builder(result.pendingIntent).build()
+                                    )
+                                }
+                                .addOnFailureListener { e ->
+                                    e.printStackTrace()
+                                }
                         }
                     }
                 )
