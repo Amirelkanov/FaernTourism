@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Logout
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Icon
@@ -42,6 +43,7 @@ import com.amel.faerntourism.R
 import com.amel.faerntourism.data.model.UserData
 import com.amel.faerntourism.ui.AuthViewModel
 import com.amel.faerntourism.ui.AuthViewModel.Companion.toUserData
+import com.amel.faerntourism.ui.ReviewViewModel
 import com.amel.faerntourism.ui.components.AccountSettingsListItem
 import com.amel.faerntourism.ui.components.GeneralScreenWrapper
 import com.amel.faerntourism.ui.theme.FaernTourismTheme
@@ -52,17 +54,20 @@ import kotlinx.coroutines.launch
 @Composable
 fun AccountScreen(
     onBottomTabSelected: (FaernDestination) -> Unit,
-    viewModel: AuthViewModel,
+    authViewModel: AuthViewModel,
+    reviewViewModel: ReviewViewModel,
     modifier: Modifier = Modifier,
 ) {
-    val authResource by viewModel.loginFlow.collectAsState()
+    val authResource by authViewModel.loginFlow.collectAsState()
 
     val scope = rememberCoroutineScope()
+
     val context = LocalContext.current
     val credentialManager = CredentialManager.create(context)
     val request = GetCredentialRequest.Builder()
         .addCredentialOption(buildGoogleIdOption(context))
         .build()
+
 
     FaernTourismTheme {
         GeneralScreenWrapper(
@@ -75,12 +80,15 @@ fun AccountScreen(
                             userData = currentUser.toUserData(),
                             onLogoutClick = {
                                 scope.launch {
-                                    viewModel.signOut {
+                                    authViewModel.signOut {
                                         credentialManager.clearCredentialState(
                                             ClearCredentialStateRequest()
                                         )
                                     }
                                 }
+                            },
+                            onLeaveReviewClick = {
+                                reviewViewModel.launchReviewFlow()
                             }
                         )
                     }.onFailure { e ->
@@ -96,7 +104,7 @@ fun AccountScreen(
                                     GoogleIdTokenCredential.createFrom(credentialResult.credential.data)
                                 val googleIdToken = googleIdTokenCredential.idToken
 
-                                viewModel.signIn(googleIdToken)
+                                authViewModel.signIn(googleIdToken)
                             } catch (e: Exception) {
                                 e.printStackTrace()
                             }
@@ -114,6 +122,7 @@ fun AccountScreen(
 fun LoggedUserScreen(
     userData: UserData,
     onLogoutClick: () -> Unit,
+    onLeaveReviewClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -152,10 +161,17 @@ fun LoggedUserScreen(
         }
         Spacer(modifier = Modifier.height(30.dp))
         Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = modifier
                 .fillMaxSize()
                 .padding(horizontal = 30.dp)
         ) {
+            AccountSettingsListItem(
+                leadingTitle = "Оценить в Rustore",
+                leadingImgVector = Icons.Outlined.Star,
+                onClick = onLeaveReviewClick
+            )
+
             AccountSettingsListItem(
                 leadingTitle = "Выйти",
                 leadingImgVector = Icons.AutoMirrored.Outlined.Logout,
@@ -207,7 +223,7 @@ fun NotLoggedUserScreen(
 
 private fun buildGoogleIdOption(context: Context): GetGoogleIdOption {
     return GetGoogleIdOption.Builder()
-        .setFilterByAuthorizedAccounts(true)
+        .setFilterByAuthorizedAccounts(false)
         .setServerClientId(context.getString(R.string.web_client_id))
         .build()
 }

@@ -22,6 +22,7 @@ import androidx.work.WorkManager
 import com.amel.faerntourism.service.createFcmNotificationChannel
 import com.amel.faerntourism.ui.AuthViewModel
 import com.amel.faerntourism.ui.PermissionsViewModel
+import com.amel.faerntourism.ui.ReviewViewModel
 import com.amel.faerntourism.ui.screens.detailed.ArticleScreen
 import com.amel.faerntourism.ui.screens.detailed.PlaceScreen
 import com.amel.faerntourism.ui.screens.general.AccountScreen
@@ -39,6 +40,7 @@ import java.util.concurrent.TimeUnit
 class FaernActivity : ComponentActivity() {
 
     private val authViewModel by viewModels<AuthViewModel>()
+    private val reviewViewModel by viewModels<ReviewViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +64,7 @@ class FaernActivity : ComponentActivity() {
                 ) {
                     val navController = rememberNavController()
 
-                    FaernNavHost(navController, authViewModel)
+                    FaernNavHost(navController, authViewModel, reviewViewModel)
                 }
             }
         }
@@ -74,7 +76,8 @@ class FaernActivity : ComponentActivity() {
 @Composable
 fun FaernNavHost(
     navController: NavHostController,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    reviewViewModel: ReviewViewModel
 ) {
     val factory = rememberPermissionsControllerFactory()
     val controller = remember(factory) { factory.createPermissionsController() }
@@ -119,7 +122,8 @@ fun FaernNavHost(
                 onBottomTabSelected = { newScreen ->
                     navController.navigateSingleTopTo(newScreen.route)
                 },
-                viewModel = authViewModel
+                authViewModel = authViewModel,
+                reviewViewModel = reviewViewModel
             )
         }
 

@@ -91,6 +91,9 @@ dependencies {
     api(libs.moko.permissions)
     api(libs.moko.permissions.compose)
 
+    implementation(libs.review)
+    implementation(libs.appupdate)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
