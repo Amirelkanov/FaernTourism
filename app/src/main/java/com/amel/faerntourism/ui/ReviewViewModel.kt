@@ -21,12 +21,11 @@ class ReviewViewModel @Inject constructor(
         reviewManager.requestReviewFlow()
             .addOnSuccessListener { info ->
                 reviewInfo = info
-                Log.d("RuStoreReview", "Successfully requested review info.")
+                Log.d(TAG, "Successfully requested review info.")
             }
             .addOnFailureListener { throwable ->
                 Log.e(
-                    "RuStoreReview",
-                    "Failed to request review info: ${throwable.message}",
+                    TAG, "Failed to request review info: ${throwable.message}",
                     throwable
                 )
             }
@@ -36,21 +35,24 @@ class ReviewViewModel @Inject constructor(
         val info = reviewInfo
         if (info == null) {
             Log.e(
-                "RuStoreReview",
+                TAG,
                 "ReviewInfo is null. Possibly requestReviewFlow() failed or hasn't returned yet."
             )
             return
         }
         reviewManager.launchReviewFlow(info)
             .addOnSuccessListener {
-                Log.d("RuStoreReview", "Review flow completed successfully.")
+                Log.d(TAG, "Review flow completed successfully.")
             }
             .addOnFailureListener { throwable ->
                 Log.e(
-                    "RuStoreReview",
-                    "Failed to launch review flow: ${throwable.message}",
+                    TAG, "Failed to launch review flow: ${throwable.message}",
                     throwable
                 )
             }
+    }
+
+    companion object {
+        private const val TAG = "RuStoreReview"
     }
 }
