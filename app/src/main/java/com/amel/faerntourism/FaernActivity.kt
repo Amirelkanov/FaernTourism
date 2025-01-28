@@ -7,9 +7,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -23,6 +27,8 @@ import com.amel.faerntourism.service.createFcmNotificationChannel
 import com.amel.faerntourism.ui.AuthViewModel
 import com.amel.faerntourism.ui.PermissionsViewModel
 import com.amel.faerntourism.ui.ReviewViewModel
+import com.amel.faerntourism.ui.UpdateEvent
+import com.amel.faerntourism.ui.UpdateViewModel
 import com.amel.faerntourism.ui.screens.detailed.ArticleScreen
 import com.amel.faerntourism.ui.screens.detailed.PlaceScreen
 import com.amel.faerntourism.ui.screens.general.AccountScreen
@@ -34,6 +40,7 @@ import com.amel.faerntourism.worker.InterestingPlaceNotificationWorker
 import dagger.hilt.android.AndroidEntryPoint
 import dev.icerock.moko.permissions.compose.BindEffect
 import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
@@ -41,6 +48,7 @@ class FaernActivity : ComponentActivity() {
 
     private val authViewModel by viewModels<AuthViewModel>()
     private val reviewViewModel by viewModels<ReviewViewModel>()
+    private val updateViewModel by viewModels<UpdateViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,7 +72,7 @@ class FaernActivity : ComponentActivity() {
                 ) {
                     val navController = rememberNavController()
 
-                    FaernNavHost(navController, authViewModel, reviewViewModel)
+                    FaernNavHost(navController, authViewModel, reviewViewModel, updateViewModel)
                 }
             }
         }
@@ -77,7 +85,8 @@ class FaernActivity : ComponentActivity() {
 fun FaernNavHost(
     navController: NavHostController,
     authViewModel: AuthViewModel,
-    reviewViewModel: ReviewViewModel
+    reviewViewModel: ReviewViewModel,
+    updateViewModel: UpdateViewModel
 ) {
     val factory = rememberPermissionsControllerFactory()
     val controller = remember(factory) { factory.createPermissionsController() }
@@ -87,6 +96,27 @@ fun FaernNavHost(
     val permissionsViewModel = viewModel { PermissionsViewModel(controller) }
 
     permissionsViewModel.provideOrRequestRecordAllPermissions()
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(updateViewModel) {
+        updateViewModel.events.collect { event ->
+            if (event is UpdateEvent.UpdateDownloaded) {
+                scope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = "Обновление скачано. Установить сейчас?",
+                        actionLabel = "Установить"
+                    ).also { result ->
+                        if (result == SnackbarResult.ActionPerformed) {
+                            updateViewModel.completeUpdateRequested()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
     NavHost(navController = navController, startDestination = Home.route) {
         composable(route = Home.route) {

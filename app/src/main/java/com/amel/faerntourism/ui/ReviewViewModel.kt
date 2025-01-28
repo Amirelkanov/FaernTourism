@@ -1,27 +1,19 @@
 package com.amel.faerntourism.ui
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import ru.rustore.sdk.review.RuStoreReviewManager
-import ru.rustore.sdk.review.RuStoreReviewManagerFactory
 import ru.rustore.sdk.review.model.ReviewInfo
 import javax.inject.Inject
 
 @HiltViewModel
 class ReviewViewModel @Inject constructor(
-    @ApplicationContext private val context: Context
+    private val reviewManager: RuStoreReviewManager
 ) : ViewModel() {
-
-    private val reviewManager: RuStoreReviewManager = RuStoreReviewManagerFactory.create(context)
     private var reviewInfo: ReviewInfo? = null
 
     init {
-        // Запрашиваем reviewInfo в начале флоу пользователя,
-        // где-то за 0-3 минуты до показа шторки,
-        // чтобы запуск шторки оценки в конце флоу произошел мгновенно.
         requestReviewFlow()
     }
 
