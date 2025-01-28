@@ -1,58 +1,76 @@
 package com.amel.faerntourism.ui
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import ru.rustore.sdk.review.RuStoreReviewManager
+import ru.rustore.sdk.review.RuStoreReviewManagerFactory
 import ru.rustore.sdk.review.model.ReviewInfo
-import javax.inject.Inject
 
-@HiltViewModel
-class ReviewViewModel @Inject constructor(
-    private val reviewManager: RuStoreReviewManager
-) : ViewModel() {
+class ReviewViewModel : ViewModel() {
+
+    private var isInitCalled: Boolean = false
+
+    private val _event = MutableSharedFlow<UserFlowEvent>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    val event = _event.asSharedFlow()
+
+
+    private lateinit var reviewManager: RuStoreReviewManager
+
     private var reviewInfo: ReviewInfo? = null
 
-    init {
+    fun init(context: Context) {
+        if (isInitCalled) return
+
+        createReviewManager(context)
         requestReviewFlow()
+
+        isInitCalled = true
+    }
+
+    private fun createReviewManager(context: Context) {
+        reviewManager = RuStoreReviewManagerFactory.create(context)
     }
 
     private fun requestReviewFlow() {
+        if (reviewInfo != null) return
         reviewManager.requestReviewFlow()
-            .addOnSuccessListener { info ->
-                reviewInfo = info
+            .addOnSuccessListener { reviewInfo ->
+                this.reviewInfo = reviewInfo
                 Log.d(TAG, "Successfully requested review info.")
             }
             .addOnFailureListener { throwable ->
-                Log.e(
-                    TAG, "Failed to request review info: ${throwable.message}",
-                    throwable
-                )
+                Log.e(TAG, throwable.toString())
             }
     }
 
     fun launchReviewFlow() {
-        val info = reviewInfo
-        if (info == null) {
-            Log.e(
-                TAG,
-                "ReviewInfo is null. Possibly requestReviewFlow() failed or hasn't returned yet."
-            )
-            return
+        val reviewInfo = reviewInfo
+        if (reviewInfo != null) {
+            reviewManager.launchReviewFlow(reviewInfo)
+                .addOnSuccessListener {
+                    _event.tryEmit(UserFlowEvent.ReviewEnd)
+                    Log.d(TAG, "Review flow completed successfully.")
+                }.addOnFailureListener { throwable ->
+                    _event.tryEmit(UserFlowEvent.ReviewEnd)
+                    Log.e(TAG, throwable.toString())
+                }
+        } else {
+            _event.tryEmit(UserFlowEvent.ReviewEnd)
         }
-        reviewManager.launchReviewFlow(info)
-            .addOnSuccessListener {
-                Log.d(TAG, "Review flow completed successfully.")
-            }
-            .addOnFailureListener { throwable ->
-                Log.e(
-                    TAG, "Failed to launch review flow: ${throwable.message}",
-                    throwable
-                )
-            }
     }
 
     companion object {
         private const val TAG = "RuStoreReview"
     }
+}
+
+sealed class UserFlowEvent {
+    data object ReviewEnd : UserFlowEvent()
 }

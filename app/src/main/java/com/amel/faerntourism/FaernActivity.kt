@@ -53,6 +53,9 @@ class FaernActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        updateViewModel.init(this)
+        reviewViewModel.init(this)
+
         val periodicRequest = PeriodicWorkRequestBuilder<InterestingPlaceNotificationWorker>(
             12, TimeUnit.HOURS,
         ).build()
@@ -102,7 +105,7 @@ fun FaernNavHost(
 
     LaunchedEffect(updateViewModel) {
         updateViewModel.events.collect { event ->
-            if (event is UpdateEvent.UpdateDownloaded) {
+            if (event is UpdateEvent.UpdateCompleted) {
                 scope.launch {
                     snackbarHostState.showSnackbar(
                         message = "Обновление скачано. Установить сейчас?",

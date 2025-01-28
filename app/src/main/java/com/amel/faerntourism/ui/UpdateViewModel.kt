@@ -1,24 +1,23 @@
 package com.amel.faerntourism.ui
 
 import android.app.Activity
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import ru.rustore.sdk.appupdate.listener.InstallStateUpdateListener
 import ru.rustore.sdk.appupdate.manager.RuStoreAppUpdateManager
+import ru.rustore.sdk.appupdate.manager.factory.RuStoreAppUpdateManagerFactory
 import ru.rustore.sdk.appupdate.model.AppUpdateOptions
 import ru.rustore.sdk.appupdate.model.AppUpdateType
 import ru.rustore.sdk.appupdate.model.InstallStatus
 import ru.rustore.sdk.appupdate.model.UpdateAvailability
-import javax.inject.Inject
 
-@HiltViewModel
-class UpdateViewModel @Inject constructor(
-    private val appUpdateManager: RuStoreAppUpdateManager
-) : ViewModel() {
+class UpdateViewModel : ViewModel() {
+
+    private lateinit var ruStoreAppUpdateManager: RuStoreAppUpdateManager
 
     private val _events = MutableSharedFlow<UpdateEvent>(
         extraBufferCapacity = 1,
@@ -26,31 +25,51 @@ class UpdateViewModel @Inject constructor(
     )
     val events = _events.asSharedFlow()
 
-    init {
-        checkForUpdates()
-    }
+    private val installStateUpdateListener = InstallStateUpdateListener { installState ->
+        when (installState.installStatus) {
+            InstallStatus.DOWNLOADED -> {
+                _events.tryEmit(UpdateEvent.UpdateCompleted)
+            }
 
-    fun completeUpdateRequested() {
-        appUpdateManager.completeUpdate(
-            AppUpdateOptions.Builder().appUpdateType(AppUpdateType.FLEXIBLE).build()
-        ).addOnFailureListener { throwable ->
-            Log.e(TAG, "completeUpdate error", throwable)
+            InstallStatus.DOWNLOADING -> {
+                Log.d(
+                    TAG,
+                    "Downloading update: ${installState.bytesDownloaded} / ${installState.totalBytesToDownload}"
+                )
+            }
+
+            InstallStatus.FAILED -> {
+                Log.e(TAG, "Downloading error")
+            }
         }
     }
 
     override fun onCleared() {
         super.onCleared()
-        // Stop receiving update installation state callbacks
-        appUpdateManager.unregisterListener(installStateUpdateListener)
+        ruStoreAppUpdateManager.unregisterListener(installStateUpdateListener)
+    }
+
+    fun init(context: Context) {
+        ruStoreAppUpdateManager = RuStoreAppUpdateManagerFactory.create(context)
+        checkForUpdates()
+    }
+
+    fun completeUpdateRequested() {
+        ruStoreAppUpdateManager.completeUpdate(
+            AppUpdateOptions.Builder().appUpdateType(AppUpdateType.FLEXIBLE).build()
+        )
+            .addOnFailureListener { throwable ->
+                Log.e(TAG, "completeUpdate error", throwable)
+            }
     }
 
     private fun checkForUpdates() {
-        appUpdateManager.getAppUpdateInfo()
+        ruStoreAppUpdateManager
+            .getAppUpdateInfo()
             .addOnSuccessListener { appUpdateInfo ->
                 if (appUpdateInfo.updateAvailability == UpdateAvailability.UPDATE_AVAILABLE) {
-                    appUpdateManager.registerListener(installStateUpdateListener)
-
-                    appUpdateManager
+                    ruStoreAppUpdateManager.registerListener(installStateUpdateListener)
+                    ruStoreAppUpdateManager
                         .startUpdateFlow(appUpdateInfo, AppUpdateOptions.Builder().build())
                         .addOnSuccessListener { resultCode ->
                             if (resultCode == Activity.RESULT_CANCELED) {
@@ -69,28 +88,6 @@ class UpdateViewModel @Inject constructor(
             }
     }
 
-
-    private val installStateUpdateListener = InstallStateUpdateListener { installState ->
-        when (installState.installStatus) {
-            InstallStatus.DOWNLOADED -> {
-                // Notify UI that update has finished downloading and is ready to be installed
-                _events.tryEmit(UpdateEvent.UpdateDownloaded)
-            }
-
-            InstallStatus.DOWNLOADING -> {
-                Log.d(
-                    TAG,
-                    "Downloading update: ${installState.bytesDownloaded} / ${installState.totalBytesToDownload}"
-                )
-            }
-
-            InstallStatus.FAILED -> {
-                Log.e(TAG, "Update download failed")
-            }
-        }
-    }
-
-
     companion object {
         private const val TAG = "RuStoreUpdate"
     }
@@ -100,5 +97,5 @@ class UpdateViewModel @Inject constructor(
  * Simple sealed class for sending update-related events to UI.
  */
 sealed class UpdateEvent {
-    data object UpdateDownloaded : UpdateEvent()
+    data object UpdateCompleted : UpdateEvent()
 }
