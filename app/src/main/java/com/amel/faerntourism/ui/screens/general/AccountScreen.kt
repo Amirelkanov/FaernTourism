@@ -67,13 +67,7 @@ fun AccountScreen(
     val scope = rememberCoroutineScope()
 
     val context = LocalContext.current
-    /*val credentialManager = CredentialManager.create(context)
-    val request = GetCredentialRequest.Builder()
-        .addCredentialOption(buildGoogleIdOption(context))
-        .build()*/
-
     val oneTapClient = Identity.getSignInClient(context)
-
     val signInRequest = BeginSignInRequest.builder()
         .setGoogleIdTokenRequestOptions(
             BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
@@ -131,24 +125,6 @@ fun AccountScreen(
                     }
                 } ?: NotLoggedUserScreen(
                     onLoginClick = {
-                        /*scope.launch {
-                            try {
-                                *//*val credentialResult =
-                                    credentialManager.getCredential(context, request)
-                                val googleIdTokenCredential =
-                                    GoogleIdTokenCredential.createFrom(credentialResult.credential.data)
-                                val googleIdToken = googleIdTokenCredential.idToken*//*
-
-                                val credential = oneTapClient.getSignInCredentialFromIntent(data)
-                                val idToken = credential.googleIdToken
-
-
-
-                                authViewModel.signIn(googleIdToken)
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                            }
-                        }*/
                         scope.launch {
                             oneTapClient.beginSignIn(signInRequest)
                                 .addOnSuccessListener { result ->
