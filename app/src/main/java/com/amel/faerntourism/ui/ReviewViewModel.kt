@@ -51,6 +51,7 @@ class ReviewViewModel : ViewModel() {
     }
 
     fun launchReviewFlow() {
+        Log.d(TAG, "Review flow launched.")
         val reviewInfo = reviewInfo
         if (reviewInfo != null) {
             reviewManager.launchReviewFlow(reviewInfo)
@@ -62,6 +63,7 @@ class ReviewViewModel : ViewModel() {
                     Log.e(TAG, throwable.toString())
                 }
         } else {
+            Log.w(TAG, "Review info is null.")
             _event.tryEmit(UserFlowEvent.ReviewEnd)
         }
     }

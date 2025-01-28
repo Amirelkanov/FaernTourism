@@ -30,7 +30,7 @@ class AuthViewModel @Inject constructor(
         _loginFlow.value = result
     }
 
-    fun signOut(clearCredentialState: suspend () -> Unit) = viewModelScope.launch {
+    fun signOut(clearCredentialState: suspend () -> Unit = {}) = viewModelScope.launch {
         repository.signOut(clearCredentialState)
         _loginFlow.value = null
     }

@@ -52,7 +52,6 @@ import com.amel.faerntourism.ui.theme.FaernTourismTheme
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.common.api.ApiException
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import kotlinx.coroutines.launch
 
 @Composable
@@ -67,17 +66,8 @@ fun AccountScreen(
     val scope = rememberCoroutineScope()
 
     val context = LocalContext.current
-    val oneTapClient = Identity.getSignInClient(context)
-    val signInRequest = BeginSignInRequest.builder()
-        .setGoogleIdTokenRequestOptions(
-            BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
-                .setSupported(true)
-                .setServerClientId(getString(context, R.string.web_client_id))
-                .setFilterByAuthorizedAccounts(false)
-                .build()
-        )
-        .build()
 
+    val oneTapClient = Identity.getSignInClient(context)
     val oneTapLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult()
     ) { result ->
@@ -109,11 +99,7 @@ fun AccountScreen(
                             userData = currentUser.toUserData(),
                             onLogoutClick = {
                                 scope.launch {
-                                    authViewModel.signOut {
-                                        /*credentialManager.clearCredentialState(
-                                            ClearCredentialStateRequest()
-                                        )*/
-                                    }
+                                    authViewModel.signOut()
                                 }
                             },
                             onLeaveReviewClick = {
@@ -126,7 +112,7 @@ fun AccountScreen(
                 } ?: NotLoggedUserScreen(
                     onLoginClick = {
                         scope.launch {
-                            oneTapClient.beginSignIn(signInRequest)
+                            oneTapClient.beginSignIn(buildGoogleIdSignInRequest(context))
                                 .addOnSuccessListener { result ->
                                     oneTapLauncher.launch(
                                         IntentSenderRequest.Builder(result.pendingIntent).build()
@@ -248,9 +234,14 @@ fun NotLoggedUserScreen(
     }
 }
 
-private fun buildGoogleIdOption(context: Context): GetGoogleIdOption {
-    return GetGoogleIdOption.Builder()
-        .setFilterByAuthorizedAccounts(false)
-        .setServerClientId(context.getString(R.string.web_client_id))
+private fun buildGoogleIdSignInRequest(context: Context): BeginSignInRequest {
+    return BeginSignInRequest.builder()
+        .setGoogleIdTokenRequestOptions(
+            BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
+                .setSupported(true)
+                .setServerClientId(getString(context, R.string.web_client_id))
+                .setFilterByAuthorizedAccounts(false)
+                .build()
+        )
         .build()
 }
