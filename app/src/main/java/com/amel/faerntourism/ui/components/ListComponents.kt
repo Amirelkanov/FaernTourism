@@ -38,7 +38,6 @@ import com.amel.faerntourism.R
 import com.amel.faerntourism.ui.theme.AppTypography
 import com.amel.faerntourism.ui.theme.FaernTourismTheme
 
-// TODO: favourite
 @Composable
 fun FaernListItem(
     title: String,

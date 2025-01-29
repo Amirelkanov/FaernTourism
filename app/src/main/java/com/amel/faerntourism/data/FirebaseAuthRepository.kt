@@ -1,5 +1,6 @@
 package com.amel.faerntourism.data
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
@@ -23,7 +24,7 @@ class FirebaseAuthRepositoryImpl @Inject constructor(
             val result = firebaseAuth.signInWithCredential(firebaseCredential).await()
             Result.success(result.user!!)
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.w(TAG, e)
             Result.failure(e)
         }
     }
@@ -34,8 +35,12 @@ class FirebaseAuthRepositoryImpl @Inject constructor(
             firebaseAuth.signOut()
             Result.success(Unit)
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.w(TAG, e)
             Result.failure(e)
         }
+    }
+
+    companion object {
+        const val TAG = "FirebaseAuthRepository"
     }
 }

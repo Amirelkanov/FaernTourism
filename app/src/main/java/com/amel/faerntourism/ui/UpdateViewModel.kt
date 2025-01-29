@@ -1,24 +1,26 @@
 package com.amel.faerntourism.ui
 
 import android.app.Activity
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import ru.rustore.sdk.appupdate.errors.InstallErrorCode.Companion.ERROR_EXTERNAL_SOURCE_DENIED
+import ru.rustore.sdk.appupdate.errors.RuStoreInstallException
 import ru.rustore.sdk.appupdate.listener.InstallStateUpdateListener
 import ru.rustore.sdk.appupdate.manager.RuStoreAppUpdateManager
-import ru.rustore.sdk.appupdate.manager.factory.RuStoreAppUpdateManagerFactory
 import ru.rustore.sdk.appupdate.model.AppUpdateOptions
 import ru.rustore.sdk.appupdate.model.AppUpdateType
 import ru.rustore.sdk.appupdate.model.InstallStatus
 import ru.rustore.sdk.appupdate.model.UpdateAvailability
+import javax.inject.Inject
 
-class UpdateViewModel : ViewModel() {
-
-    private lateinit var ruStoreAppUpdateManager: RuStoreAppUpdateManager
-
+@HiltViewModel
+class UpdateViewModel @Inject constructor(
+    private val ruStoreAppUpdateManager: RuStoreAppUpdateManager
+) : ViewModel() {
     private val _events = MutableSharedFlow<UpdateEvent>(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
@@ -28,7 +30,7 @@ class UpdateViewModel : ViewModel() {
     private val installStateUpdateListener = InstallStateUpdateListener { installState ->
         when (installState.installStatus) {
             InstallStatus.DOWNLOADED -> {
-                _events.tryEmit(UpdateEvent.UpdateCompleted)
+                _events.tryEmit(UpdateEvent.UpdateDownloaded)
             }
 
             InstallStatus.DOWNLOADING -> {
@@ -49,8 +51,7 @@ class UpdateViewModel : ViewModel() {
         ruStoreAppUpdateManager.unregisterListener(installStateUpdateListener)
     }
 
-    fun init(context: Context) {
-        ruStoreAppUpdateManager = RuStoreAppUpdateManagerFactory.create(context)
+    init {
         checkForUpdates()
     }
 
@@ -77,6 +78,9 @@ class UpdateViewModel : ViewModel() {
                             }
                         }
                         .addOnFailureListener { throwable ->
+                            if (throwable is RuStoreInstallException && throwable.code == ERROR_EXTERNAL_SOURCE_DENIED) {
+                                _events.tryEmit(UpdateEvent.UpdateDenied)
+                            }
                             Log.e(TAG, "startUpdateFlow error", throwable)
                         }
                 } else {
@@ -96,6 +100,7 @@ class UpdateViewModel : ViewModel() {
 /**
  * Simple sealed class for sending update-related events to UI.
  */
-sealed class UpdateEvent {
-    data object UpdateCompleted : UpdateEvent()
+sealed interface UpdateEvent {
+    data object UpdateDownloaded : UpdateEvent
+    data object UpdateDenied : UpdateEvent
 }

@@ -11,8 +11,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -20,6 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.amel.faerntourism.FaernDestination
 import com.amel.faerntourism.faernBottomNavigationBarScreens
+import com.amel.faerntourism.ui.UpdateEvent
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -27,6 +35,7 @@ fun GeneralScreenWrapper(
     currentScreen: FaernDestination,
     onBottomTabSelected: (FaernDestination) -> Unit,
     content: @Composable () -> Unit,
+    snackbarHost: @Composable () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -53,6 +62,7 @@ fun GeneralScreenWrapper(
                 onBottomTabSelected = onBottomTabSelected
             )
         },
+        snackbarHost = snackbarHost,
         containerColor = colorScheme.background
     ) { contentPadding ->
         Box(modifier = Modifier.padding(contentPadding)) {

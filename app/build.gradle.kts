@@ -13,10 +13,10 @@ android {
 
     defaultConfig {
         applicationId = "com.amel.faerntourism"
-        minSdk = 25
+        minSdk = 26
         targetSdk = 34
-        versionCode = 4
-        versionName = "1.2.1"
+        versionCode = 2
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.play.services.auth)
     implementation(libs.play.services.location)
+    implementation(libs.play.services.maps)
 
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.android.maps.utils)
@@ -84,15 +85,15 @@ dependencies {
     implementation(libs.google.firebase.messaging)
 
     implementation(libs.retrofit)
-    implementation(libs.play.services.location)
     implementation(libs.okhttp)
     implementation(libs.converter.scalars)
 
     api(libs.moko.permissions)
     api(libs.moko.permissions.compose)
 
-    implementation(libs.review)
-    implementation(libs.appupdate)
+    implementation(platform("ru.rustore.sdk:bom:7.0.0"))
+    implementation("ru.rustore.sdk:appupdate")
+    implementation("ru.rustore.sdk:review")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -105,7 +106,6 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.googleid)
-    implementation(libs.play.services.maps)
     implementation(libs.firebase.vertexai)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

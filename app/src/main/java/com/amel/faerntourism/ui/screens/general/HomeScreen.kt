@@ -1,7 +1,10 @@
 package com.amel.faerntourism.ui.screens.general
 
 
+import android.content.Intent
 import android.location.Location
+import android.net.Uri
+import android.provider.Settings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,6 +17,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -22,7 +29,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -33,6 +42,8 @@ import com.amel.faerntourism.ui.LocationViewModel
 import com.amel.faerntourism.ui.LocationViewModel.Companion.prettifyDistance
 import com.amel.faerntourism.ui.LocationViewModel.Companion.toLocation
 import com.amel.faerntourism.ui.PermissionsViewModel
+import com.amel.faerntourism.ui.UpdateEvent
+import com.amel.faerntourism.ui.UpdateViewModel
 import com.amel.faerntourism.ui.components.FaernListItem
 import com.amel.faerntourism.ui.components.GeneralScreenWrapper
 import com.amel.faerntourism.ui.components.ListItemAdditionalInfo
@@ -41,39 +52,81 @@ import com.amel.faerntourism.ui.screens.side.ErrorScreen
 import com.amel.faerntourism.ui.screens.side.LoadingScreen
 import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionState
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
     onBottomTabSelected: (FaernDestination) -> Unit,
     onPlaceClick: (String) -> Unit,
     permissionsViewModel: PermissionsViewModel,
+    updateViewModel: UpdateViewModel,
     locationViewModel: LocationViewModel = hiltViewModel(),
     placesViewModel: PlacesViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
 ) {
-
-    LaunchedEffect(Unit) {
-        placesViewModel.getPlacesData()
-    }
-
     val placesViewState by placesViewModel.placeListViewStateFlow.collectAsState()
     val location by locationViewModel.locationState.collectAsState()
     val locationPermissionState = permissionsViewModel.permissionsMap[Permission.LOCATION]
+
+    LaunchedEffect(Unit) { placesViewModel.getPlacesData() }
 
     LaunchedEffect(locationPermissionState) {
         if (locationPermissionState == PermissionState.Granted) locationViewModel.startTracking()
     }
 
-    // Clean up when leaving the screen
     DisposableEffect(Unit) {
         onDispose {
             locationViewModel.stopTracking()
         }
     }
 
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    LaunchedEffect(updateViewModel) {
+        updateViewModel.events.collect { event ->
+            when (event) {
+                is UpdateEvent.UpdateDownloaded -> {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = "Установить скачанное обновление?",
+                            actionLabel = "Установить",
+                            duration = SnackbarDuration.Long
+                        ).also { result ->
+                            if (result == SnackbarResult.ActionPerformed) {
+                                updateViewModel.completeUpdateRequested()
+                            }
+                        }
+                    }
+                }
+
+                is UpdateEvent.UpdateDenied -> {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = "Обновление невозможно. Разрешите установку из сторонних источников в настройках RuStore.",
+                            actionLabel = "Перейти",
+                            duration = SnackbarDuration.Long
+                        ).also { result ->
+                            if (result == SnackbarResult.ActionPerformed) {
+                                val intent =
+                                    Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
+                                        data = Uri.parse("package:ru.vk.store")
+                                    }
+                                context.startActivity(intent)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
     GeneralScreenWrapper(
         currentScreen = Home,
         onBottomTabSelected = onBottomTabSelected,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         content = {
             when (val state = placesViewState) {
                 is PlaceListViewState.Success -> PlacesFeedScreen(

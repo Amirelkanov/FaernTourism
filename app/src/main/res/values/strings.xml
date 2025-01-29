@@ -2,7 +2,6 @@
     <string name="app_name">FaernTourism</string>
     <string name="web_client_id">436072807280-83r6ji7461rl8h80itjeva8mpjkhrdfa.apps.googleusercontent.com</string>
     <string name="placeholder_search">Поиск…</string>
-    <string name="favourite">Избранное</string>
     <string name="home">Домой</string>
     <string name="tours">Туры</string>
     <string name="articles">Статьи</string>

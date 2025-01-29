@@ -1,6 +1,7 @@
 package com.amel.faerntourism.ui
 
 import android.os.Build
+import android.util.Log
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -32,7 +33,7 @@ class PermissionsViewModel(
                     permissionsMap[permission] = controller.getPermissionState(permission)
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.w(TAG, e)
             }
         }
     }
@@ -51,10 +52,14 @@ class PermissionsViewModel(
             } catch (e: DeniedException) {
                 permissionsMap[permission] = PermissionState.Denied
             } catch (e: RequestCanceledException) {
-                e.printStackTrace()
+                Log.w(TAG, e)
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.w(TAG, e)
             }
         }
+    }
+
+    companion object {
+        const val TAG = "PermissionsViewModel"
     }
 }

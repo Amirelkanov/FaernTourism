@@ -1,42 +1,31 @@
 package com.amel.faerntourism.ui
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import ru.rustore.sdk.review.RuStoreReviewManager
-import ru.rustore.sdk.review.RuStoreReviewManagerFactory
 import ru.rustore.sdk.review.model.ReviewInfo
+import javax.inject.Inject
 import ru.rustore.sdk.review.errors.RuStoreReviewExists as RuStoreReviewExistsException
 
-class ReviewViewModel : ViewModel() {
-
-    private var isInitCalled: Boolean = false
+@HiltViewModel
+class ReviewViewModel @Inject constructor(
+    private val reviewManager: RuStoreReviewManager
+) : ViewModel() {
 
     private val _event = MutableSharedFlow<UserFlowEvent>(
         extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
     val event = _event.asSharedFlow()
 
-
-    private lateinit var reviewManager: RuStoreReviewManager
-
     private var reviewInfo: ReviewInfo? = null
     private var reviewAlreadyExists = false
 
-    fun init(context: Context) {
-        if (isInitCalled) return
-
-        createReviewManager(context)
+    init {
         requestReviewFlow()
-
-        isInitCalled = true
-    }
-
-    private fun createReviewManager(context: Context) {
-        reviewManager = RuStoreReviewManagerFactory.create(context)
     }
 
     private fun requestReviewFlow() {
@@ -46,7 +35,7 @@ class ReviewViewModel : ViewModel() {
             Log.d(TAG, "Successfully requested review info.")
         }.addOnFailureListener { throwable ->
             if (throwable is RuStoreReviewExistsException) reviewAlreadyExists = true
-            Log.e(TAG, throwable.toString())
+            Log.w(TAG, throwable.toString())
         }
     }
 

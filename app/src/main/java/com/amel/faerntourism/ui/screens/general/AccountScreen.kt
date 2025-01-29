@@ -2,6 +2,7 @@ package com.amel.faerntourism.ui.screens.general
 
 import android.app.Activity
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
@@ -44,6 +45,7 @@ import coil3.request.crossfade
 import com.amel.faerntourism.Account
 import com.amel.faerntourism.FaernDestination
 import com.amel.faerntourism.R
+import com.amel.faerntourism.data.FirebaseAuthRepositoryImpl
 import com.amel.faerntourism.data.model.UserData
 import com.amel.faerntourism.ui.AuthViewModel
 import com.amel.faerntourism.ui.AuthViewModel.Companion.toUserData
@@ -85,7 +87,7 @@ fun AccountScreen(
                     }
                 }
             } catch (e: ApiException) {
-                e.printStackTrace()
+                Log.w("OneTapClient", e)
             }
         }
     }
@@ -126,7 +128,7 @@ fun AccountScreen(
                             }
                         )
                     }.onFailure { e ->
-                        e.printStackTrace()
+                        Log.w(FirebaseAuthRepositoryImpl.TAG, e)
                     }
                 } ?: NotLoggedUserScreen(
                     onLoginClick = {
@@ -138,7 +140,7 @@ fun AccountScreen(
                                     )
                                 }
                                 .addOnFailureListener { e ->
-                                    e.printStackTrace()
+                                    Log.w("OneTapClient", e)
                                 }
                         }
                     }

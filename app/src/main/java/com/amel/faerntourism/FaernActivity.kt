@@ -7,13 +7,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -27,7 +23,6 @@ import com.amel.faerntourism.service.createFcmNotificationChannel
 import com.amel.faerntourism.ui.AuthViewModel
 import com.amel.faerntourism.ui.PermissionsViewModel
 import com.amel.faerntourism.ui.ReviewViewModel
-import com.amel.faerntourism.ui.UpdateEvent
 import com.amel.faerntourism.ui.UpdateViewModel
 import com.amel.faerntourism.ui.screens.detailed.ArticleScreen
 import com.amel.faerntourism.ui.screens.detailed.PlaceScreen
@@ -40,7 +35,6 @@ import com.amel.faerntourism.worker.InterestingPlaceNotificationWorker
 import dagger.hilt.android.AndroidEntryPoint
 import dev.icerock.moko.permissions.compose.BindEffect
 import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
-import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
@@ -52,9 +46,6 @@ class FaernActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        updateViewModel.init(this)
-        reviewViewModel.init(this)
 
         val periodicRequest = PeriodicWorkRequestBuilder<InterestingPlaceNotificationWorker>(
             12, TimeUnit.HOURS,
@@ -80,8 +71,6 @@ class FaernActivity : ComponentActivity() {
             }
         }
     }
-
-
 }
 
 @Composable
@@ -100,27 +89,6 @@ fun FaernNavHost(
 
     permissionsViewModel.provideOrRequestRecordAllPermissions()
 
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
-
-    LaunchedEffect(updateViewModel) {
-        updateViewModel.events.collect { event ->
-            if (event is UpdateEvent.UpdateCompleted) {
-                scope.launch {
-                    snackbarHostState.showSnackbar(
-                        message = "Обновление скачано. Установить сейчас?",
-                        actionLabel = "Установить"
-                    ).also { result ->
-                        if (result == SnackbarResult.ActionPerformed) {
-                            updateViewModel.completeUpdateRequested()
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-
     NavHost(navController = navController, startDestination = Home.route) {
         composable(route = Home.route) {
             HomeScreen(
@@ -130,6 +98,7 @@ fun FaernNavHost(
                 onPlaceClick = { placeId ->
                     navController.navigateToSinglePlace(placeId)
                 },
+                updateViewModel = updateViewModel,
                 permissionsViewModel = permissionsViewModel
             )
         }
