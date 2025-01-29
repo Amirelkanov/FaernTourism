@@ -30,12 +30,12 @@ class ReviewViewModel @Inject constructor(
 
     private fun requestReviewFlow() {
         if (reviewInfo != null) return
-        reviewManager.requestReviewFlow().addOnSuccessListener { reviewInfo ->
-            this.reviewInfo = reviewInfo
+        reviewManager.requestReviewFlow().addOnSuccessListener { newReviewInfo ->
+            reviewInfo = newReviewInfo
             Log.d(TAG, "Successfully requested review info.")
         }.addOnFailureListener { throwable ->
             if (throwable is RuStoreReviewExistsException) reviewAlreadyExists = true
-            Log.w(TAG, throwable.toString())
+            Log.w(TAG, "requestReviewFlow", throwable)
         }
     }
 
@@ -48,7 +48,7 @@ class ReviewViewModel @Inject constructor(
                 Log.d(TAG, "Review flow completed successfully.")
             }.addOnFailureListener { throwable ->
                 _event.tryEmit(UserFlowEvent.ReviewEnd)
-                Log.e(TAG, throwable.toString())
+                Log.w(TAG, "launchReviewFlow", throwable)
             }
         } else {
             Log.w(TAG, "Review info is null.")

@@ -15,8 +15,8 @@ android {
         applicationId = "com.amel.faerntourism"
         minSdk = 26
         targetSdk = 34
-        versionCode = 2
-        versionName = "1.1"
+        versionCode = 5
+        versionName = "1.2.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -91,9 +91,9 @@ dependencies {
     api(libs.moko.permissions)
     api(libs.moko.permissions.compose)
 
-    implementation(platform("ru.rustore.sdk:bom:7.0.0"))
-    implementation("ru.rustore.sdk:appupdate")
-    implementation("ru.rustore.sdk:review")
+    implementation(platform(libs.rustore.bom))
+    implementation(libs.rustore.appupdate)
+    implementation(libs.rustore.review)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

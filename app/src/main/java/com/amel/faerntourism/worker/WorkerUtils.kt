@@ -6,8 +6,6 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.net.toUri
@@ -27,7 +25,7 @@ fun makeInterestingPlaceNotification(
     place: Place,
     context: Context
 ) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) createNotificationChannel(context)
+    createNotificationChannel(context)
 
     val pendingIntent = createNavigateToPlaceIntent(context, place.id)
 
@@ -43,7 +41,6 @@ fun makeInterestingPlaceNotification(
     NotificationManagerCompat.from(context).notify(INTERESTING_PLACE_NOTIFICATION_ID, builder)
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 private fun createNotificationChannel(context: Context) {
     val importance = NotificationManager.IMPORTANCE_HIGH
     val channel = NotificationChannel(

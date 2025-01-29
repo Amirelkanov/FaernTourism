@@ -1,7 +1,6 @@
 package com.amel.faerntourism
 
 
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,7 +21,6 @@ import androidx.work.WorkManager
 import com.amel.faerntourism.service.createFcmNotificationChannel
 import com.amel.faerntourism.ui.AuthViewModel
 import com.amel.faerntourism.ui.PermissionsViewModel
-import com.amel.faerntourism.ui.ReviewViewModel
 import com.amel.faerntourism.ui.UpdateViewModel
 import com.amel.faerntourism.ui.screens.detailed.ArticleScreen
 import com.amel.faerntourism.ui.screens.detailed.PlaceScreen
@@ -39,13 +37,11 @@ import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class FaernActivity : ComponentActivity() {
-
-    private val authViewModel by viewModels<AuthViewModel>()
-    private val reviewViewModel by viewModels<ReviewViewModel>()
-    private val updateViewModel by viewModels<UpdateViewModel>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val authViewModel by viewModels<AuthViewModel>()
+        val updateViewModel by viewModels<UpdateViewModel>()
 
         val periodicRequest = PeriodicWorkRequestBuilder<InterestingPlaceNotificationWorker>(
             12, TimeUnit.HOURS,
@@ -57,7 +53,7 @@ class FaernActivity : ComponentActivity() {
             periodicRequest
         )
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) createFcmNotificationChannel(this)
+        createFcmNotificationChannel(this)
 
         setContent {
             FaernTourismTheme {
@@ -66,7 +62,21 @@ class FaernActivity : ComponentActivity() {
                 ) {
                     val navController = rememberNavController()
 
-                    FaernNavHost(navController, authViewModel, reviewViewModel, updateViewModel)
+                    val factory = rememberPermissionsControllerFactory()
+                    val controller = remember(factory) { factory.createPermissionsController() }
+
+                    BindEffect(controller)
+
+                    val permissionsViewModel = viewModel { PermissionsViewModel(controller) }
+
+                    permissionsViewModel.provideOrRequestRecordAllPermissions()
+
+                    FaernNavHost(
+                        navController,
+                        authViewModel,
+                        updateViewModel,
+                        permissionsViewModel
+                    )
                 }
             }
         }
@@ -77,18 +87,9 @@ class FaernActivity : ComponentActivity() {
 fun FaernNavHost(
     navController: NavHostController,
     authViewModel: AuthViewModel,
-    reviewViewModel: ReviewViewModel,
-    updateViewModel: UpdateViewModel
+    updateViewModel: UpdateViewModel,
+    permissionsViewModel: PermissionsViewModel
 ) {
-    val factory = rememberPermissionsControllerFactory()
-    val controller = remember(factory) { factory.createPermissionsController() }
-
-    BindEffect(controller)
-
-    val permissionsViewModel = viewModel { PermissionsViewModel(controller) }
-
-    permissionsViewModel.provideOrRequestRecordAllPermissions()
-
     NavHost(navController = navController, startDestination = Home.route) {
         composable(route = Home.route) {
             HomeScreen(
@@ -107,6 +108,7 @@ fun FaernNavHost(
                 onBottomTabSelected = { newScreen ->
                     navController.navigateSingleTopTo(newScreen.route)
                 },
+                updateViewModel = updateViewModel,
             )
         }
         composable(route = Articles.route) {
@@ -116,7 +118,8 @@ fun FaernNavHost(
                 },
                 onArticleClick = { articleId ->
                     navController.navigateToSingleArticle(articleId)
-                }
+                },
+                updateViewModel = updateViewModel,
             )
         }
         composable(route = Account.route) {
@@ -125,7 +128,7 @@ fun FaernNavHost(
                     navController.navigateSingleTopTo(newScreen.route)
                 },
                 authViewModel = authViewModel,
-                reviewViewModel = reviewViewModel
+                updateViewModel = updateViewModel,
             )
         }
 

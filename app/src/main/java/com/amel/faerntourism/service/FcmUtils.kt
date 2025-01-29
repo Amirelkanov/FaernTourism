@@ -5,15 +5,12 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.amel.faerntourism.FCM_CHANNEL_ID
 import com.amel.faerntourism.FCM_NOTIFICATION_CHANNEL_DESCRIPTION
 import com.amel.faerntourism.FCM_NOTIFICATION_CHANNEL_NAME
 import com.amel.faerntourism.FaernActivity
 import com.amel.faerntourism.REQUEST_CODE
 
-@RequiresApi(Build.VERSION_CODES.O)
 fun createFcmNotificationChannel(context: Context) {
     val importance = NotificationManager.IMPORTANCE_HIGH
     val channel = NotificationChannel(

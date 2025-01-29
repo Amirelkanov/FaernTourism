@@ -30,6 +30,7 @@ class UpdateViewModel @Inject constructor(
     private val installStateUpdateListener = InstallStateUpdateListener { installState ->
         when (installState.installStatus) {
             InstallStatus.DOWNLOADED -> {
+                Log.d(TAG, "Update has been downloaded!")
                 _events.tryEmit(UpdateEvent.UpdateDownloaded)
             }
 
@@ -41,7 +42,7 @@ class UpdateViewModel @Inject constructor(
             }
 
             InstallStatus.FAILED -> {
-                Log.e(TAG, "Downloading error")
+                Log.w(TAG, "Downloading error")
             }
         }
     }
@@ -60,7 +61,7 @@ class UpdateViewModel @Inject constructor(
             AppUpdateOptions.Builder().appUpdateType(AppUpdateType.FLEXIBLE).build()
         )
             .addOnFailureListener { throwable ->
-                Log.e(TAG, "completeUpdate error", throwable)
+                Log.w(TAG, "completeUpdate error", throwable)
             }
     }
 
@@ -81,14 +82,14 @@ class UpdateViewModel @Inject constructor(
                             if (throwable is RuStoreInstallException && throwable.code == ERROR_EXTERNAL_SOURCE_DENIED) {
                                 _events.tryEmit(UpdateEvent.UpdateDenied)
                             }
-                            Log.e(TAG, "startUpdateFlow error", throwable)
+                            Log.w(TAG, "startUpdateFlow error", throwable)
                         }
                 } else {
                     Log.d(TAG, "No updates available.")
                 }
             }
             .addOnFailureListener { throwable ->
-                Log.e(TAG, "getAppUpdateInfo error", throwable)
+                Log.w(TAG, "getAppUpdateInfo error", throwable)
             }
     }
 

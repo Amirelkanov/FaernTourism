@@ -20,8 +20,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.amel.faerntourism.Articles
 import com.amel.faerntourism.FaernDestination
 import com.amel.faerntourism.data.model.Article
-import com.amel.faerntourism.ui.components.GeneralScreenWrapper
+import com.amel.faerntourism.ui.UpdateViewModel
 import com.amel.faerntourism.ui.components.FaernListItem
+import com.amel.faerntourism.ui.components.GeneralScreenWrapper
 import com.amel.faerntourism.ui.components.SearchBar
 import com.amel.faerntourism.ui.screens.side.ErrorScreen
 import com.amel.faerntourism.ui.screens.side.LoadingScreen
@@ -30,6 +31,7 @@ import com.amel.faerntourism.ui.screens.side.LoadingScreen
 fun ArticlesScreen(
     onBottomTabSelected: (FaernDestination) -> Unit,
     onArticleClick: (String) -> Unit,
+    updateViewModel: UpdateViewModel,
     articlesViewModel: ArticlesViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
 ) {
@@ -53,7 +55,9 @@ fun ArticlesScreen(
 
                 else -> LoadingScreen(modifier = modifier.fillMaxSize())
             }
-        }, modifier = Modifier.padding(horizontal = 10.dp)
+        },
+        updateViewModel = updateViewModel,
+        modifier = Modifier.padding(horizontal = 10.dp)
     )
 }
 

@@ -22,12 +22,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.amel.faerntourism.FaernDestination
 import com.amel.faerntourism.Tours
 import com.amel.faerntourism.data.model.Tour
+import com.amel.faerntourism.ui.UpdateViewModel
 import com.amel.faerntourism.ui.components.FaernListItem
 import com.amel.faerntourism.ui.components.GeneralScreenWrapper
 import com.amel.faerntourism.ui.components.ListItemAdditionalInfo
@@ -35,11 +35,11 @@ import com.amel.faerntourism.ui.components.SearchBar
 import com.amel.faerntourism.ui.screens.side.ErrorScreen
 import com.amel.faerntourism.ui.screens.side.LoadingScreen
 import com.amel.faerntourism.ui.theme.AppTypography
-import com.amel.faerntourism.ui.theme.FaernTourismTheme
 
 @Composable
 fun ToursScreen(
     onBottomTabSelected: (FaernDestination) -> Unit,
+    updateViewModel: UpdateViewModel,
     toursViewModel: ToursViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
@@ -52,6 +52,7 @@ fun ToursScreen(
     GeneralScreenWrapper(
         currentScreen = Tours,
         onBottomTabSelected = onBottomTabSelected,
+        updateViewModel = updateViewModel,
         content = {
             when (val state = toursViewState) {
                 is TourListViewState.Success -> ToursFeedScreen(
@@ -123,14 +124,6 @@ fun ToursFeedScreen(
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFF5F0EE)
-@Composable
-fun ToursScreenPreview() {
-    FaernTourismTheme {
-        ToursScreen({})
     }
 }
 

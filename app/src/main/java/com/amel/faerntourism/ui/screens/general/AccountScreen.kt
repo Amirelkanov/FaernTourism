@@ -39,6 +39,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.getString
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -50,10 +51,10 @@ import com.amel.faerntourism.data.model.UserData
 import com.amel.faerntourism.ui.AuthViewModel
 import com.amel.faerntourism.ui.AuthViewModel.Companion.toUserData
 import com.amel.faerntourism.ui.ReviewViewModel
+import com.amel.faerntourism.ui.UpdateViewModel
 import com.amel.faerntourism.ui.UserFlowEvent
 import com.amel.faerntourism.ui.components.AccountSettingsListItem
 import com.amel.faerntourism.ui.components.GeneralScreenWrapper
-import com.amel.faerntourism.ui.theme.FaernTourismTheme
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.common.api.ApiException
@@ -63,7 +64,8 @@ import kotlinx.coroutines.launch
 fun AccountScreen(
     onBottomTabSelected: (FaernDestination) -> Unit,
     authViewModel: AuthViewModel,
-    reviewViewModel: ReviewViewModel,
+    updateViewModel: UpdateViewModel,
+    reviewViewModel: ReviewViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
 ) {
     val authResource by authViewModel.loginFlow.collectAsState()
@@ -108,47 +110,45 @@ fun AccountScreen(
         }
     }
 
-
-    FaernTourismTheme {
-        GeneralScreenWrapper(
-            currentScreen = Account,
-            onBottomTabSelected = onBottomTabSelected,
-            content = {
-                authResource?.let { result ->
-                    result.onSuccess { currentUser ->
-                        LoggedUserScreen(
-                            userData = currentUser.toUserData(),
-                            onLogoutClick = {
-                                scope.launch {
-                                    authViewModel.signOut()
-                                }
-                            },
-                            onLeaveReviewClick = {
-                                reviewViewModel.launchReviewFlow()
+    GeneralScreenWrapper(
+        currentScreen = Account,
+        onBottomTabSelected = onBottomTabSelected,
+        updateViewModel = updateViewModel,
+        content = {
+            authResource?.let { result ->
+                result.onSuccess { currentUser ->
+                    LoggedUserScreen(
+                        userData = currentUser.toUserData(),
+                        onLogoutClick = {
+                            scope.launch {
+                                authViewModel.signOut()
                             }
-                        )
-                    }.onFailure { e ->
-                        Log.w(FirebaseAuthRepositoryImpl.TAG, e)
-                    }
-                } ?: NotLoggedUserScreen(
-                    onLoginClick = {
-                        scope.launch {
-                            oneTapClient.beginSignIn(buildGoogleIdSignInRequest(context))
-                                .addOnSuccessListener { result ->
-                                    oneTapLauncher.launch(
-                                        IntentSenderRequest.Builder(result.pendingIntent).build()
-                                    )
-                                }
-                                .addOnFailureListener { e ->
-                                    Log.w("OneTapClient", e)
-                                }
+                        },
+                        onLeaveReviewClick = {
+                            reviewViewModel.launchReviewFlow()
                         }
+                    )
+                }.onFailure { e ->
+                    Log.w(FirebaseAuthRepositoryImpl.TAG, e)
+                }
+            } ?: NotLoggedUserScreen(
+                onLoginClick = {
+                    scope.launch {
+                        oneTapClient.beginSignIn(buildGoogleIdSignInRequest(context))
+                            .addOnSuccessListener { result ->
+                                oneTapLauncher.launch(
+                                    IntentSenderRequest.Builder(result.pendingIntent).build()
+                                )
+                            }
+                            .addOnFailureListener { e ->
+                                Log.w("OneTapClient", e)
+                            }
                     }
-                )
-            },
-            modifier = modifier.padding(horizontal = 10.dp)
-        )
-    }
+                }
+            )
+        },
+        modifier = modifier.padding(horizontal = 10.dp)
+    )
 }
 
 

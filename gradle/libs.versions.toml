@@ -6,7 +6,7 @@ coilNetworkOkhttp = "3.0.4"
 converterScalars = "2.9.0"
 firebaseBom = "33.8.0"
 moko = "0.18.1"
-
+rustoreBom = "7.0.0"
 hiltAndroid = "2.51.1"
 hiltNavigationCompose = "1.2.0"
 androidxHiltWork = "1.2.0"
@@ -86,6 +86,10 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit
 
 moko-permissions = { module = "dev.icerock.moko:permissions", version.ref = "moko" }
 moko-permissions-compose = { module = "dev.icerock.moko:permissions-compose", version.ref = "moko" }
+
+rustore-bom = { module = "ru.rustore.sdk:bom", version.ref = "rustoreBom" }
+rustore-appupdate = { module = "ru.rustore.sdk:appupdate" }
+rustore-review = { module = "ru.rustore.sdk:review" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
