@@ -20,17 +20,17 @@ class WorkManagerFaernRepository @Inject constructor(
     fun enqueuePeriodicWork() {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
-            .setRequiresStorageNotLow(true)
+            .setRequiresBatteryNotLow(true)
             .build()
 
         val periodicRequest = PeriodicWorkRequestBuilder<InterestingPlaceNotificationWorker>(
             12, TimeUnit.HOURS
-        ).setConstraints(constraints).build()
+        ).setConstraints(constraints)
 
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             DAILY_WORK_NAME,
             ExistingPeriodicWorkPolicy.KEEP,
-            periodicRequest
+            periodicRequest.build()
         )
     }
 }
