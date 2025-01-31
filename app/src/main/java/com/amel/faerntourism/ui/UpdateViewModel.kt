@@ -74,9 +74,6 @@ class UpdateViewModel @Inject constructor(
                     ruStoreAppUpdateManager
                         .startUpdateFlow(appUpdateInfo, AppUpdateOptions.Builder().build())
                         .addOnSuccessListener { resultCode ->
-                            if (resultCode == Activity.RESULT_OK) {
-                                _events.tryEmit(UpdateEvent.UpdateDownloaded)
-                            }
                             if (resultCode == Activity.RESULT_CANCELED) {
                                 Log.d(TAG, "User canceled update flow.")
                             }
